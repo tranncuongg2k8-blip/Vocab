@@ -1,0 +1,14 @@
+{
+  "name": "vocab-frontend",
+  "version": "1.0.0",
+  "description": "IELTS Vocab Flashcards Frontend - Sprint 1 (Antigravity UI/UX)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["flashcards", "vocab", "antigravity", "ielts"],
+  "author": "Gemini (Antigravity UI/UX)",
+  "license": "ISC"
+}

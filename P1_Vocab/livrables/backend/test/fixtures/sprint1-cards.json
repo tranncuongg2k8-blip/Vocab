@@ -1,0 +1,92 @@
+[
+  {
+    "id": "1",
+    "setId": "1",
+    "front": "achieve",
+    "back": "đạt được",
+    "phonetic": "/əˈtʃiːv/",
+    "example": "You can achieve your goals with regular practice.",
+    "audioUrl": null
+  },
+  {
+    "id": "2",
+    "setId": "1",
+    "front": "benefit",
+    "back": "lợi ích",
+    "phonetic": "/ˈbenɪfɪt/",
+    "example": "Exercise has many benefits for your health.",
+    "audioUrl": null
+  },
+  {
+    "id": "3",
+    "setId": "1",
+    "front": "challenge",
+    "back": "thử thách",
+    "phonetic": "/ˈtʃælɪndʒ/",
+    "example": "Learning a new language is an exciting challenge.",
+    "audioUrl": null
+  },
+  {
+    "id": "4",
+    "setId": "1",
+    "front": "develop",
+    "back": "phát triển",
+    "phonetic": "/dɪˈveləp/",
+    "example": "Reading helps you develop your vocabulary.",
+    "audioUrl": null
+  },
+  {
+    "id": "5",
+    "setId": "1",
+    "front": "environment",
+    "back": "môi trường",
+    "phonetic": "/ɪnˈvaɪrənmənt/",
+    "example": "We should protect the environment.",
+    "audioUrl": null
+  },
+  {
+    "id": "6",
+    "setId": "1",
+    "front": "improve",
+    "back": "cải thiện",
+    "phonetic": "/ɪmˈpruːv/",
+    "example": "Daily practice will improve your English.",
+    "audioUrl": null
+  },
+  {
+    "id": "7",
+    "setId": "1",
+    "front": "knowledge",
+    "back": "kiến thức",
+    "phonetic": "/ˈnɒlɪdʒ/",
+    "example": "Books are a valuable source of knowledge.",
+    "audioUrl": null
+  },
+  {
+    "id": "8",
+    "setId": "1",
+    "front": "opportunity",
+    "back": "cơ hội",
+    "phonetic": "/ˌɒpəˈtjuːnəti/",
+    "example": "This course is an opportunity to learn new skills.",
+    "audioUrl": null
+  },
+  {
+    "id": "9",
+    "setId": "1",
+    "front": "confident",
+    "back": "tự tin",
+    "phonetic": "/ˈkɒnfɪdənt/",
+    "example": "She feels confident when speaking English.",
+    "audioUrl": null
+  },
+  {
+    "id": "10",
+    "setId": "1",
+    "front": "responsible",
+    "back": "có trách nhiệm",
+    "phonetic": "/rɪˈspɒnsəbl/",
+    "example": "Everyone is responsible for keeping the classroom clean.",
+    "audioUrl": null
+  }
+]
