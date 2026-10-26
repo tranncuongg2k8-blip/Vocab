@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IELTS Vocab Flashcards - Antigravity UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/flashcard.css">
+  <link rel="stylesheet" href="css/mydecks.css">
+</head>
+<body>
+  <!-- Antigravity Particle Background -->
+  <canvas id="antigravity-canvas" class="antigravity-backdrop" aria-hidden="true"></canvas>
+
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="brand-group" id="btn-brand-home" role="button" tabindex="0" title="Về danh sách bộ từ">
+          <div class="brand-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">VocabMaster <span class="badge-sprint">Sprint 13</span></h1>
+            <p class="brand-subtitle">IELTS Flashcard Studio • Antigravity UI/UX</p>
+          </div>
+        </div>
+
+        <!-- Main Navigation Tabs (Sprint 7: Library vs My Decks) -->
+        <nav class="main-nav-tabs" aria-label="Điều hướng chính">
+          <button type="button" class="main-nav-tab active" id="nav-tab-sets">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>Thư viện hệ thống</span>
+          </button>
+          <button type="button" class="main-nav-tab" id="nav-tab-my-decks">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>Bộ thẻ của tôi</span>
+            <span class="nav-badge-pill">Mới</span>
+          </button>
+        </nav>
+
+        <div class="header-actions">
+          <!-- Backend Connection Status Indicator -->
+          <div class="api-status-pill" id="api-status-indicator" title="Trạng thái kết nối API Backend">
+            <span class="status-dot status-checking"></span>
+            <span class="status-label" id="api-status-text">Đang kiểm tra API...</span>
+          </div>
+
+          <!-- Shortcuts Button -->
+          <button type="button" class="btn btn-ghost btn-icon" id="btn-open-shortcuts" title="Phím tắt nhanh (H)" aria-label="Xem phím tắt">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"></path>
+            </svg>
+            <span class="btn-text-desktop">Phím tắt</span>
+          </button>
+
+          <!-- Settings Button -->
+          <button type="button" class="btn btn-ghost btn-icon" id="btn-open-settings" title="Cài đặt API" aria-label="Cài đặt API">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-main">
+      <!-- VIEW 1: SETS LIST -->
+      <section id="view-sets" class="view-section active">
+        <div class="view-header">
+          <div>
+            <h2 class="view-title">Bộ từ vựng IELTS</h2>
+            <p class="view-desc">Chọn một bộ từ vựng bên dưới để bắt đầu học với Flashcard tương tác 3D hoặc thử thách với bài Trắc nghiệm.</p>
+          </div>
+          <div class="view-controls">
+            <div class="search-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="sets-search-input" placeholder="Tìm kiếm bộ từ vựng..." autocomplete="off">
+            </div>
+            <button type="button" class="btn btn-secondary" id="btn-refresh-sets" title="Làm mới danh sách">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              Làm mới
+            </button>
+          </div>
+        </div>
+
+        <!-- Sets States Container -->
+        <div id="sets-container" class="sets-grid">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+        <!-- Loading State for Sets -->
+        <div id="sets-loading" class="state-container loading-state">
+          <div class="sets-grid skeleton-grid">
+            <div class="set-card-skeleton"></div>
+            <div class="set-card-skeleton"></div>
+            <div class="set-card-skeleton"></div>
+          </div>
+        </div>
+
+        <!-- Empty State for Sets -->
+        <div id="sets-empty" class="state-container empty-state hidden">
+          <div class="state-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </div>
+          <h3>Chưa có bộ từ vựng nào</h3>
+          <p>Hiện tại hệ thống chưa có dữ liệu bộ từ vựng. Vui lòng kiểm tra API Backend.</p>
+          <button type="button" class="btn btn-primary" id="btn-retry-empty-sets">Tải lại</button>
+        </div>
+
+        <!-- Error State for Sets -->
+        <div id="sets-error" class="state-container error-state hidden">
+          <div class="state-icon error-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3 id="sets-error-title">Không thể kết nối đến Backend</h3>
+          <p id="sets-error-desc">Vui lòng đảm bảo server backend đang chạy tại địa chỉ API Contract: <code>http://localhost:8000/api/v1</code>.</p>
+          <div class="error-meta" id="sets-error-code">Mã lỗi: NETWORK_ERROR</div>
+          <button type="button" class="btn btn-primary" id="btn-retry-sets">Thử kết nối lại</button>
+        </div>
+      </section>
+
+      <!-- VIEW 2: STUDY VIEW (FLASHCARD 3-COL + QUIZ MODE) -->
+      <section id="view-study" class="view-section">
+        <!-- Study Navigation / Header -->
+        <div class="study-nav-bar">
+          <button type="button" class="btn btn-ghost btn-back" id="btn-back-to-sets">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Quay lại danh sách</span>
+          </button>
+
+          <div class="current-set-info" id="current-set-meta">
+            <span class="set-title-badge" id="study-set-title">Đang tải...</span>
+            <span class="badge badge-lang" id="study-set-lang">en-vi</span>
+          </div>
+
+          <div class="study-quick-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-shuffle-top" title="Xáo trộn thứ tự thẻ (S)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 3 21 3 21 8"></polyline>
+                <line x1="4" y1="20" x2="21" y2="3"></line>
+                <polyline points="21 16 21 21 16 21"></polyline>
+                <line x1="15" y1="15" x2="21" y2="21"></line>
+                <line x1="4" y1="4" x2="9" y2="9"></line>
+              </svg>
+              <span>Xáo trộn</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Global Study Loading State -->
+        <div id="study-loading" class="state-container loading-state study-loader">
+          <div class="card-skeleton">
+            <div class="skeleton-shimmer"></div>
+          </div>
+          <p>Đang tải dữ liệu từ vựng...</p>
+        </div>
+
+        <!-- Global Study Error State -->
+        <div id="study-error" class="state-container error-state study-error hidden">
+          <div class="state-icon error-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3 id="study-error-title">Không thể tải dữ liệu</h3>
+          <p id="study-error-desc">Lỗi trong quá trình lấy danh sách thẻ của bộ từ vựng.</p>
+          <div class="error-meta" id="study-error-code">Mã lỗi: SET_NOT_FOUND</div>
+          <div class="study-error-actions">
+            <button type="button" class="btn btn-primary" id="btn-retry-study">Thử lại</button>
+            <button type="button" class="btn btn-secondary" id="btn-error-back-sets">Về danh sách</button>
+          </div>
+        </div>
+
+        <!-- Global Study Empty State -->
+        <div id="study-empty" class="state-container empty-state study-empty hidden">
+          <div class="state-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+            </svg>
+          </div>
+          <h3>Bộ từ vựng trống</h3>
+          <p>Bộ từ vựng này hiện chưa có thẻ nào trong cơ sở dữ liệu.</p>
+          <button type="button" class="btn btn-primary" id="btn-empty-back-sets">Chọn bộ khác</button>
+        </div>
+
+        <!-- ==============================================
+             SUB-MODE 1: FLASHCARD (3-COLUMN & PROGRESS)
+             ============================================== -->
+        <div id="mode-container-flashcard" class="study-mode-container">
+          <!-- SPRINT 2 (Task F5): THANH THỐNG KÊ (GET /progress/:setId) -->
+          <div class="study-stats-bar" id="study-stats-bar">
+            <div class="stats-header">
+              <span class="stats-heading">Thống kê tiến độ ghi nhớ</span>
+              <span class="stats-total-pill" id="stats-total-text">Tổng số: 0 thẻ</span>
+            </div>
+            
+            <div class="stats-cards-row">
+              <!-- Đã nhớ (mastered) -->
+              <div class="stat-badge-box stat-mastered" title="Đã nhớ hoặc nhớ rất tốt (Level: remembered & mastered)">
+                <div class="stat-badge-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="stat-badge-data">
+                  <span class="stat-badge-count" id="stat-count-mastered">0</span>
+                  <span class="stat-badge-label">Đã nhớ</span>
+                </div>
+              </div>
+
+              <!-- Cần ôn tập (review) -->
+              <div class="stat-badge-box stat-review" title="Cần ôn tập thêm (Level: forgot & vague)">
+                <div class="stat-badge-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                <div class="stat-badge-data">
+                  <span class="stat-badge-count" id="stat-count-review">0</span>
+                  <span class="stat-badge-label">Cần ôn tập</span>
+                </div>
+              </div>
+
+              <!-- Chưa nhớ / Chưa học (unseen) -->
+              <div class="stat-badge-box stat-unseen" title="Chưa học / Chưa đánh giá">
+                <div class="stat-badge-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </div>
+                <div class="stat-badge-data">
+                  <span class="stat-badge-count" id="stat-count-unseen">0</span>
+                  <span class="stat-badge-label">Chưa nhớ</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Multi-segment Progress Bar -->
+            <div class="multi-progress-track" title="Tỷ lệ: Xanh lá (Đã nhớ) - Cam (Cần ôn) - Xám (Chưa học)">
+              <div class="multi-progress-seg seg-mastered" id="seg-mastered" style="width: 0%;"></div>
+              <div class="multi-progress-seg seg-review" id="seg-review" style="width: 0%;"></div>
+              <div class="multi-progress-seg seg-unseen" id="seg-unseen" style="width: 100%;"></div>
+            </div>
+
+            <!-- Card Mini Indicator Track -->
+            <div class="card-pills-strip" id="card-pills-strip" aria-label="Danh sách thẻ">
+              <!-- Dynamically populated card dots -->
+            </div>
+          </div>
+
+          <!-- SPRINT 2 (Task F4): BỐ CỤC 3 CỘT THEO ẢNH THAM CHIẾU -->
+          <div class="study-three-column-layout" id="study-three-column-layout">
+            <!-- CỘT 1 (TRÁI): THẺ TỪ (TỪ + PHIÊN ÂM + NÚT LOA + TAG LOẠI TỪ) -->
+            <aside class="col-word-detail" id="col-word-detail">
+              <div class="col-panel-card">
+                <div class="col-header-row">
+                  <span class="badge badge-wordtype" id="side-word-type">Từ vựng</span>
+                  <button type="button" class="btn-audio-circle" id="btn-side-audio" title="Phát âm từ vựng (P)" aria-label="Phát âm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="side-word-hero">
+                  <h3 class="side-word-title" id="side-word-text">--</h3>
+                  <div class="side-word-ipa" id="side-word-phonetic">/--/</div>
+                </div>
+
+                <div class="side-divider"></div>
+
+                <div class="side-meaning-section">
+                  <span class="side-section-label">Định nghĩa tiếng Việt:</span>
+                  <div class="side-meaning-text" id="side-word-meaning">--</div>
+                </div>
+
+                <!-- Ví dụ -->
+                <div class="side-example-section" id="side-example-wrapper">
+                  <span class="side-section-label">Ví dụ minh họa:</span>
+                  <blockquote class="side-example-en" id="side-word-example">--</blockquote>
+                  <p class="side-example-vi" id="side-word-example-vi">--</p>
+                </div>
+
+                <!-- Synonyms & Antonyms -->
+                <div class="side-syn-ant-section" id="side-syn-ant-wrapper">
+                  <div class="syn-group" id="side-syn-group">
+                    <span class="side-sub-label">Đồng nghĩa (Synonyms):</span>
+                    <div class="tags-badge-list" id="side-word-synonyms">
+                      <!-- Populated dynamically -->
+                    </div>
+                  </div>
+                  <div class="ant-group" id="side-ant-group">
+                    <span class="side-sub-label">Trái nghĩa (Antonyms):</span>
+                    <div class="tags-badge-list" id="side-word-antonyms">
+                      <!-- Populated dynamically -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <!-- CỘT 2 (GIỮA): PANEL "LẬT THẺ" (4 NÚT QUÊN/MƠ HỒ/NHỚ/NHỚ RỒI + PHÍM 1-4, NÚT LẬT THẺ/SPACE, PREV/NEXT) -->
+            <main class="col-flashcard-center" id="col-flashcard-center">
+              <!-- The 3D Interactive Flashcard -->
+              <div id="flashcard-wrapper" class="flashcard-perspective-wrapper">
+                <div class="card-3d-box" id="flashcard-element" tabindex="0" role="region" aria-label="Thẻ từ vựng">
+                  <!-- FRONT FACE -->
+                  <div class="card-face card-face-front">
+                    <div class="card-face-header">
+                      <span class="card-tag card-tag-front" id="card-face-front-badge">Mặt trước</span>
+                      <div class="card-face-header-actions">
+                        <span class="card-rating-status-pill hidden" id="card-rating-pill-front">Đã đánh giá</span>
+                        <button type="button" class="btn-card-audio" id="btn-audio-front" title="Phát âm từ vựng (P)" aria-label="Phát âm">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                          </svg>
+                          <span>Nghe</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="card-face-body">
+                      <div class="card-word" id="card-front-word">--</div>
+                      <div class="card-phonetic" id="card-phonetic-ipa">/--/</div>
+                    </div>
+
+                    <div class="card-face-footer">
+                      <span class="card-hint">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                        </svg>
+                        Nhấp vào thẻ hoặc nhấn <kbd>Space</kbd> để lật mặt sau
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- BACK FACE -->
+                  <div class="card-face card-face-back">
+                    <div class="card-face-header">
+                      <span class="card-tag card-tag-back" id="card-face-back-badge">Mặt sau</span>
+                      <div class="card-face-header-actions">
+                        <span class="card-rating-status-pill hidden" id="card-rating-pill-back">Đã đánh giá</span>
+                        <button type="button" class="btn-card-audio" id="btn-audio-back" title="Phát âm từ vựng (P)" aria-label="Phát âm">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                          </svg>
+                          <span>Nghe</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="card-face-body">
+                      <div class="card-back-title" id="card-back-word-reminder">--</div>
+                      <div class="card-meaning" id="card-back-meaning">--</div>
+
+                    <div class="card-example-box" id="card-example-container">
+                      <div class="example-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        Ví dụ ngữ cảnh:
+                      </div>
+                      <blockquote class="card-example" id="card-example-text">--</blockquote>
+                      <p class="card-example-sub" id="card-example-vi-sub"></p>
+                    </div>
+                  </div>
+
+                  <div class="card-face-footer">
+                    <span class="card-hint">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                      </svg>
+                      Nhấp vào thẻ hoặc nhấn <kbd>Space</kbd> để lật lại mặt trước
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigation Controls (Prev / Flip / Next) -->
+            <div class="study-nav-controls" id="study-controls">
+              <button type="button" class="btn btn-control" id="btn-prev-card" title="Thẻ trước (← hoặc A)" aria-label="Thẻ trước">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Trước</span>
+                <kbd class="shortcut-tag">A</kbd>
+              </button>
+
+              <button type="button" class="btn btn-flip-card" id="btn-flip-card" title="Lật thẻ (Space)" aria-label="Lật thẻ">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                </svg>
+                <span>Lật thẻ</span>
+                <kbd class="shortcut-tag">Space</kbd>
+              </button>
+
+              <button type="button" class="btn btn-control" id="btn-next-card" title="Thẻ tiếp theo (→ hoặc D)" aria-label="Thẻ tiếp theo">
+                <span>Tiếp</span>
+                <kbd class="shortcut-tag">D</kbd>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+
+            <!-- SPRINT 2 (Task F4 & F6): 4 NÚT CHẤM ĐIỂM GHI NHỚ (POST /progress) -->
+            <div class="rating-buttons-panel" id="rating-buttons-panel">
+              <div class="rating-panel-header">
+                <span class="rating-panel-title">Mức độ ghi nhớ từ vựng này:</span>
+                <span class="rating-panel-hint">Bấm phím <kbd>1</kbd> - <kbd>4</kbd> để chấm điểm nhanh</span>
+              </div>
+              <div class="rating-buttons-grid">
+                <!-- 1: Quên (forgot) -->
+                <button type="button" class="btn-rating btn-rating-forgot" data-level="forgot" title="Quên từ này (Phím 1)">
+                  <span class="rating-kbd">1</span>
+                  <div class="rating-content">
+                    <span class="rating-name">Quên</span>
+                    <span class="rating-desc">Chưa nhớ được</span>
+                  </div>
+                </button>
+
+                <!-- 2: Mơ hồ (vague) -->
+                <button type="button" class="btn-rating btn-rating-vague" data-level="vague" title="Nhớ mơ hồ (Phím 2)">
+                  <span class="rating-kbd">2</span>
+                  <div class="rating-content">
+                    <span class="rating-name">Mơ hồ</span>
+                    <span class="rating-desc">Còn phân vân</span>
+                  </div>
+                </button>
+
+                <!-- 3: Nhớ (remembered) -->
+                <button type="button" class="btn-rating btn-rating-remembered" data-level="remembered" title="Đã nhớ từ (Phím 3)">
+                  <span class="rating-kbd">3</span>
+                  <div class="rating-content">
+                    <span class="rating-name">Nhớ</span>
+                    <span class="rating-desc">Đã thuộc nghĩa</span>
+                  </div>
+                </button>
+
+                <!-- 4: Nhớ rồi (mastered) -->
+                <button type="button" class="btn-rating btn-rating-mastered" data-level="mastered" title="Nhớ rất tốt (Phím 4)">
+                  <span class="rating-kbd">4</span>
+                  <div class="rating-content">
+                    <span class="rating-name">Nhớ rồi</span>
+                    <span class="rating-desc">Thành thạo</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </main>
+
+          <!-- CỘT 3 (PHẢI): SIDEBAR TÙY CHỈNH (GIỌNG ĐỌC, MẶT TRƯỚC, PHIÊN ÂM, VÍ DỤ, SYN/ANT, TỰ ĐỌC, TRỘN, MÀU) -->
+          <aside class="col-customization-sidebar" id="col-customization-sidebar">
+            <div class="col-panel-card sidebar-card">
+              <div class="sidebar-header">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <h4 class="sidebar-title">Tùy chỉnh</h4>
+              </div>
+
+              <div class="sidebar-options-list">
+                <!-- 1. Giọng đọc -->
+                <div class="opt-group">
+                  <label class="opt-label" for="opt-voice-accent">
+                    <span>Giọng phát âm:</span>
+                  </label>
+                  <select id="opt-voice-accent" class="opt-select">
+                    <option value="en-US">Mỹ (English US)</option>
+                    <option value="en-GB">Anh (English UK)</option>
+                    <option value="en-AU">Úc (English AU)</option>
+                  </select>
+                </div>
+
+                <!-- 2. Mặt trước (EN trước hay VI trước) -->
+                <div class="opt-toggle-row">
+                  <span class="opt-toggle-text">Hiển thị Tiếng Anh trước</span>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-front-en-first" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <!-- 3. Phiên âm IPA -->
+                <div class="opt-toggle-row">
+                  <span class="opt-toggle-text">Hiện phiên âm IPA</span>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-show-phonetic" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <!-- 4. Ví dụ -->
+                <div class="opt-toggle-row">
+                  <span class="opt-toggle-text">Hiện câu ví dụ</span>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-show-example" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <!-- 5. Syn / Ant -->
+                <div class="opt-toggle-row">
+                  <span class="opt-toggle-text">Hiện Đồng/Trái nghĩa</span>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-show-syn-ant" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <!-- 6. Tự đọc -->
+                <div class="opt-toggle-row">
+                  <span class="opt-toggle-text">Tự động phát âm</span>
+                  <label class="switch">
+                    <input type="checkbox" id="opt-auto-play">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <!-- 7. Trộn (Shuffle) -->
+                <div class="opt-group">
+                  <button type="button" class="btn btn-secondary btn-block" id="btn-sidebar-shuffle">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="16 3 21 3 21 8"></polyline>
+                      <line x1="4" y1="20" x2="21" y2="3"></line>
+                      <polyline points="21 16 21 21 16 21"></polyline>
+                      <line x1="15" y1="15" x2="21" y2="21"></line>
+                    </svg>
+                    <span>Trộn thẻ (Shuffle)</span>
+                  </button>
+                </div>
+
+                <!-- 8. Màu giao diện -->
+                <div class="opt-group">
+                  <span class="opt-label">Màu sắc chủ đạo:</span>
+                  <div class="theme-color-palette" id="theme-color-palette">
+                    <button type="button" class="theme-dot dot-indigo active" data-color="indigo" title="Chủ đạo Indigo"></button>
+                    <button type="button" class="theme-dot dot-cyan" data-color="cyan" title="Chủ đạo Cyan"></button>
+                    <button type="button" class="theme-dot dot-emerald" data-color="emerald" title="Chủ đạo Emerald"></button>
+                    <button type="button" class="theme-dot dot-rose" data-color="rose" title="Chủ đạo Rose"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           SUB-MODE 2: SPRINT 3 (Task F7 & F8) QUIZ STAGE
+           ============================================== -->
+      <div id="quiz-stage" class="quiz-stage hidden">
+        <!-- Quiz Header Bar -->
+        <div class="quiz-header-bar">
+          <div class="quiz-header-meta">
+            <span class="quiz-progress-text" id="quiz-progress-text">Câu hỏi 1 / 10</span>
+            <span class="quiz-score-tracker" id="quiz-score-tracker">Điểm: 0</span>
+          </div>
+          <div class="quiz-progress-track">
+            <div class="quiz-progress-bar" id="quiz-progress-bar" style="width: 10%;"></div>
+          </div>
+        </div>
+
+        <!-- Quiz Loading State -->
+        <div id="quiz-loading" class="state-container loading-state hidden">
+          <div class="card-skeleton">
+            <div class="skeleton-shimmer"></div>
+          </div>
+          <p>Đang chuẩn bị câu hỏi trắc nghiệm...</p>
+        </div>
+
+        <!-- Quiz Error State -->
+        <div id="quiz-error" class="state-container error-state hidden">
+          <div class="state-icon error-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3>Không thể tải bài trắc nghiệm</h3>
+          <p id="quiz-error-desc">Lỗi trong quá trình lấy câu hỏi từ API.</p>
+          <div class="error-meta" id="quiz-error-code">Mã lỗi: SET_NOT_FOUND</div>
+          <button type="button" class="btn btn-primary" id="btn-retry-quiz">Thử lại</button>
+        </div>
+
+        <!-- Quiz Empty State -->
+        <div id="quiz-empty" class="state-container empty-state hidden">
+          <div class="state-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <h3>Không có đủ câu hỏi</h3>
+          <p>Bộ từ vựng này không có đủ từ vựng để tạo bài trắc nghiệm 4 đáp án.</p>
+          <button type="button" class="btn btn-primary" id="btn-empty-quiz-back">Quay lại Flashcard</button>
+        </div>
+
+        <!-- Active Question Card Wrapper -->
+        <div id="quiz-card-wrapper">
+          <div class="quiz-card">
+            <div class="quiz-prompt-header">
+              <span class="quiz-badge-question">Câu hỏi trắc nghiệm</span>
+              <div class="quiz-prompt-row">
+                <span class="quiz-prompt-word" id="quiz-prompt-word">--</span>
+                <button type="button" class="btn-audio-circle" id="btn-quiz-audio" title="Phát âm từ vựng (P)" aria-label="Phát âm">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+              <p class="quiz-instruction">Chọn 1 trong 4 đáp án đúng bên dưới (Bấm phím <kbd>1</kbd> - <kbd>4</kbd>):</p>
+            </div>
+
+            <!-- 4 Options Grid (Sprint 3: Task F7) -->
+            <div class="quiz-options-grid" id="quiz-options-grid">
+              <!-- Dynamically populated 4 options -->
+            </div>
+
+            <!-- Feedback Banner -->
+            <div class="quiz-feedback hidden" id="quiz-feedback"></div>
+
+            <!-- Next Question Action Dock -->
+            <div class="quiz-action-dock">
+              <button type="button" class="btn btn-primary btn-next-question hidden" id="btn-next-question">
+                <span>Câu tiếp theo</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Completion Result Screen -->
+        <div id="quiz-result-wrapper" class="hidden">
+          <div class="quiz-result-card">
+            <div class="result-trophy">🏆</div>
+            <h2 class="quiz-result-title">Kết quả bài kiểm tra</h2>
+            <div class="quiz-result-badge badge-result-good" id="quiz-result-badge">Khá giỏi! 🌟</div>
+
+            <div class="quiz-score-circle">
+              <span class="quiz-result-score" id="quiz-result-score">0 / 0</span>
+              <span class="quiz-result-percent" id="quiz-result-percent">0%</span>
+            </div>
+
+            <p class="quiz-result-desc" id="quiz-result-desc">Bạn đã hoàn thành bài kiểm tra trắc nghiệm!</p>
+
+            <div class="quiz-result-actions">
+              <button type="button" class="btn btn-primary" id="btn-quiz-retry">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                Làm lại Quiz
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-quiz-back-flashcard">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                Quay lại Lật thẻ
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-quiz-back-sets">Về danh sách bộ từ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           SUB-MODE 3: SPRINT 4 (Task F9 & F10) MATCHING STAGE
+           ============================================== -->
+      <div id="matching-stage" class="matching-stage hidden">
+        <!-- Matching Header Bar -->
+        <div class="matching-header-bar">
+          <div class="matching-header-meta">
+            <div class="matching-stat-pill">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Thời gian: <strong id="matching-timer" class="font-mono">00:00</strong></span>
+            </div>
+
+            <div class="matching-stat-pill stat-mistakes">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+              <span>Lỗi: <strong id="matching-mistakes" class="font-mono">0</strong></span>
+            </div>
+
+            <div class="matching-stat-pill stat-pairs">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Đã ghép: <strong id="matching-pairs-count" class="font-mono">0 / 6</strong></span>
+            </div>
+          </div>
+
+          <!-- Matching Progress Track -->
+          <div class="matching-progress-track">
+            <div class="matching-progress-bar" id="matching-progress-bar" style="width: 0%;"></div>
+          </div>
+
+          <!-- Quick Action Controls -->
+          <div class="matching-header-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-restart-matching" title="Chơi lại ván mới (R)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+              </svg>
+              <span>Chơi lại</span>
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-matching-to-flashcard" title="Về Flashcard">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+              <span>Lật thẻ</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Matching Loading State -->
+        <div id="matching-loading" class="state-container loading-state hidden">
+          <div class="matching-skeleton-grid">
+            <div class="matching-col-skeleton">
+              <div class="tile-skeleton"></div>
+              <div class="tile-skeleton"></div>
+              <div class="tile-skeleton"></div>
+            </div>
+            <div class="matching-col-skeleton">
+              <div class="tile-skeleton"></div>
+              <div class="tile-skeleton"></div>
+              <div class="tile-skeleton"></div>
+            </div>
+          </div>
+          <p>Đang chuẩn bị các cặp thẻ ghép...</p>
+        </div>
+
+        <!-- Matching Error State -->
+        <div id="matching-error" class="state-container error-state hidden">
+          <div class="state-icon error-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3>Không thể tải bài Ghép thẻ</h3>
+          <p id="matching-error-desc">Lỗi trong quá trình lấy danh sách thẻ ghép từ API.</p>
+          <div class="error-meta" id="matching-error-code">Mã lỗi: SET_NOT_FOUND</div>
+          <button type="button" class="btn btn-primary" id="btn-retry-matching">Thử lại</button>
+        </div>
+
+        <!-- Matching Empty State -->
+        <div id="matching-empty" class="state-container empty-state hidden">
+          <div class="state-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+            </svg>
+          </div>
+          <h3>Không có đủ dữ liệu ghép thẻ</h3>
+          <p>Bộ từ vựng này không có đủ từ vựng để tạo thử thách ghép thẻ.</p>
+          <button type="button" class="btn btn-primary" id="btn-empty-matching-back">Quay lại Flashcard</button>
+        </div>
+
+        <!-- Matching Board (2 Columns: Terms & Definitions) -->
+        <div id="matching-board-wrapper" class="matching-board-wrapper">
+          <div class="matching-board-instruction">
+            <p>Chọn một thẻ từ tiếng Anh ở cột trái và nối với nghĩa tiếng Việt tương ứng ở cột phải:</p>
+          </div>
+
+          <div class="matching-columns-grid">
+            <!-- Column 1: Terms (Tiếng Anh) -->
+            <div class="matching-column" id="col-matching-terms">
+              <div class="matching-column-header">
+                <span class="matching-col-badge">Từ vựng (English)</span>
+              </div>
+              <div class="matching-tiles-list" id="matching-terms-list">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- Column 2: Definitions (Tiếng Việt) -->
+            <div class="matching-column" id="col-matching-definitions">
+              <div class="matching-column-header">
+                <span class="matching-col-badge badge-definition">Định nghĩa (Tiếng Việt)</span>
+              </div>
+              <div class="matching-tiles-list" id="matching-definitions-list">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Matching Result Screen (Màn hình hoàn thành) -->
+        <div id="matching-result-wrapper" class="matching-result-wrapper hidden">
+          <div class="matching-result-card">
+            <div class="result-trophy">⚡</div>
+            <h2 class="matching-result-title">Hoàn thành ghép thẻ!</h2>
+            <div class="matching-result-badge badge-result-excellent" id="matching-result-badge">Xuất sắc! 🔥</div>
+
+            <div class="matching-stats-summary-grid">
+              <div class="matching-summary-box">
+                <span class="summary-label">Thời gian hoàn thành</span>
+                <span class="summary-value" id="res-matching-time">00:00</span>
+              </div>
+              <div class="matching-summary-box">
+                <span class="summary-label">Số lần ghép sai</span>
+                <span class="summary-value" id="res-matching-mistakes">0 lỗi</span>
+              </div>
+              <div class="matching-summary-box">
+                <span class="summary-label">Tổng số cặp ghép</span>
+                <span class="summary-value" id="res-matching-pairs">6 / 6</span>
+              </div>
+            </div>
+
+            <p class="matching-result-desc" id="matching-result-desc">Trí nhớ tuyệt vời! Bạn đã ghép chính xác tất cả các cặp từ trong thời gian ngắn.</p>
+
+            <div class="matching-result-actions">
+              <button type="button" class="btn btn-primary" id="btn-matching-play-again">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+                Chơi ván mới
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-matching-back-flashcard">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                Quay lại Lật thẻ
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-matching-back-sets">Về danh sách bộ từ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           SUB-MODE 4: SPRINT 5 (Task F11) TYPING STAGE
+           ============================================== -->
+      <div id="typing-stage" class="typing-stage hidden">
+        <!-- Typing Header Bar -->
+        <div class="typing-header-bar">
+          <div class="typing-header-meta">
+            <span class="typing-progress-text" id="typing-progress-text">Từ 1 / 10</span>
+            <span class="typing-score-tracker" id="typing-score-tracker">Điểm: 0</span>
+          </div>
+          <div class="typing-progress-track">
+            <div class="typing-progress-bar" id="typing-progress-bar" style="width: 10%;"></div>
+          </div>
+        </div>
+
+        <!-- Typing Loading State -->
+        <div id="typing-loading" class="state-container loading-state hidden">
+          <div class="card-skeleton"><div class="skeleton-shimmer"></div></div>
+          <p>Đang tải dữ liệu bài gõ từ...</p>
+        </div>
+
+        <!-- Typing Empty State -->
+        <div id="typing-empty" class="state-container empty-state hidden">
+          <div class="state-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+          </div>
+          <h3>Bộ từ vựng trống</h3>
+          <p>Không có thẻ từ vựng nào để luyện gõ chính tả.</p>
+          <button type="button" class="btn btn-primary" id="btn-empty-typing-back">Quay lại Flashcard</button>
+        </div>
+
+        <!-- Typing Error State -->
+        <div id="typing-error" class="state-container error-state hidden">
+          <div class="state-icon error-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3>Không thể tải bài học</h3>
+          <p>Đã xảy ra lỗi trong quá trình tải dữ liệu bài gõ từ.</p>
+          <button type="button" class="btn btn-primary" id="btn-retry-typing">Thử lại</button>
+        </div>
+
+        <!-- Active Typing Card Wrapper -->
+        <div id="typing-card-wrapper" class="typing-card-wrapper">
+          <div class="typing-card">
+            <div class="typing-card-header">
+              <span class="typing-badge-mode">Gõ từ tiếng Anh</span>
+              <span class="badge badge-wordtype hidden" id="typing-word-type">Từ vựng</span>
+            </div>
+
+            <!-- Prompt: Nghĩa tiếng Việt -->
+            <div class="typing-prompt-section">
+              <span class="typing-prompt-label">Định nghĩa tiếng Việt:</span>
+              <h2 class="typing-prompt-vi" id="typing-prompt-vi">--</h2>
+              <div class="typing-hints-row">
+                <span class="typing-phonetic-hint hidden" id="typing-phonetic-hint">/--/</span>
+                <p class="typing-example-vi hidden" id="typing-example-vi">Ví dụ: --</p>
+              </div>
+            </div>
+
+            <!-- Input form -->
+            <div class="typing-form">
+              <div class="typing-input-group">
+                <input type="text" id="typing-input" class="typing-input" placeholder="Gõ từ tiếng Anh tương ứng..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <button type="button" class="btn-audio-circle" id="btn-typing-audio" title="Gợi ý phát âm (P)" aria-label="Phát âm">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Feedback Banner -->
+              <div class="typing-feedback hidden" id="typing-feedback"></div>
+
+              <!-- Action buttons -->
+              <div class="typing-actions-row">
+                <button type="button" class="btn btn-primary btn-typing-submit" id="btn-typing-submit">
+                  <span>Kiểm tra</span>
+                  <kbd class="shortcut-tag">Enter</kbd>
+                </button>
+                <button type="button" class="btn btn-primary btn-typing-next hidden" id="btn-typing-next">
+                  <span>Câu tiếp theo</span>
+                  <kbd class="shortcut-tag">Enter</kbd>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Result Screen -->
+        <div id="typing-result-wrapper" class="typing-result-wrapper hidden">
+          <div class="typing-result-card">
+            <div class="result-trophy">✍</div>
+            <h2 class="typing-result-title">Hoàn thành bài Gõ từ!</h2>
+            <div class="typing-result-badge badge-result-excellent" id="typing-result-badge">Xuất sắc! 🔥</div>
+
+            <div class="typing-score-circle">
+              <span class="typing-result-score" id="typing-result-score">0 / 0</span>
+              <span class="typing-result-percent" id="typing-result-percent">0%</span>
+            </div>
+
+            <p class="typing-result-desc" id="typing-result-desc">Trí nhớ chính tả tuyệt vời! Bạn đã gõ đúng hầu hết các từ vựng.</p>
+
+            <div class="typing-result-actions">
+              <button type="button" class="btn btn-primary" id="btn-typing-retry">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                Luyện gõ lại
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-typing-to-listening">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                Luyện Nghe–Viết
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-typing-back-flashcard">Quay lại Lật thẻ</button>
+              <button type="button" class="btn btn-ghost" id="btn-typing-back-sets">Về danh sách bộ từ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           SUB-MODE 5: SPRINT 5 (Task F12) LISTENING STAGE
+           ============================================== -->
+      <div id="listening-stage" class="listening-stage hidden">
+        <!-- Listening Header Bar -->
+        <div class="listening-header-bar">
+          <div class="listening-header-meta">
+            <span class="listening-progress-text" id="listening-progress-text">Câu 1 / 10</span>
+            <span class="listening-score-tracker" id="listening-score-tracker">Điểm: 0</span>
+          </div>
+          <div class="listening-progress-track">
+            <div class="listening-progress-bar" id="listening-progress-bar" style="width: 10%;"></div>
+          </div>
+        </div>
+
+        <!-- Listening Loading State -->
+        <div id="listening-loading" class="state-container loading-state hidden">
+          <div class="card-skeleton"><div class="skeleton-shimmer"></div></div>
+          <p>Đang chuẩn bị âm thanh bài nghe...</p>
+        </div>
+
+        <!-- Listening Empty State -->
+        <div id="listening-empty" class="state-container empty-state hidden">
+          <div class="state-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+              <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+            </svg>
+          </div>
+          <h3>Bộ từ vựng trống</h3>
+          <p>Không có thẻ từ vựng nào để luyện nghe chính tả.</p>
+          <button type="button" class="btn btn-primary" id="btn-empty-listening-back">Quay lại Flashcard</button>
+        </div>
+
+        <!-- Listening Error State -->
+        <div id="listening-error" class="state-container error-state hidden">
+          <div class="state-icon error-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3>Không thể tải bài học</h3>
+          <p>Đã xảy ra lỗi trong quá trình tải dữ liệu bài nghe chính tả.</p>
+          <button type="button" class="btn btn-primary" id="btn-retry-listening">Thử lại</button>
+        </div>
+
+        <!-- Active Listening Card Wrapper -->
+        <div id="listening-card-wrapper" class="listening-card-wrapper">
+          <div class="listening-card">
+            <div class="listening-card-header">
+              <span class="listening-badge-mode">Nghe–Viết (Dictation)</span>
+            </div>
+
+            <!-- Big Audio Control Stage -->
+            <div class="listening-audio-stage">
+              <button type="button" class="btn-listening-audio-main" id="btn-listening-audio-main" title="Bấm để nghe phát âm (Space)" aria-label="Nghe phát âm">
+                <div class="audio-main-icon">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </div>
+                <span class="audio-main-label">Nghe phát âm</span>
+              </button>
+
+              <!-- Soundwave animation indicator -->
+              <div class="listening-soundwave" id="listening-soundwave" aria-hidden="true">
+                <span class="sound-bar bar-1"></span>
+                <span class="sound-bar bar-2"></span>
+                <span class="sound-bar bar-3"></span>
+                <span class="sound-bar bar-4"></span>
+                <span class="sound-bar bar-5"></span>
+              </div>
+
+              <!-- Secondary speed button -->
+              <div class="listening-sub-audio-row">
+                <button type="button" class="btn btn-ghost btn-sm btn-audio-slow" id="btn-listening-audio-slow" title="Nghe với tốc độ chậm (0.65x)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                  <span>Nghe chậm (0.65x)</span>
+                </button>
+              </div>
+
+              <!-- Meaning Hint blurred until clicked -->
+              <div class="listening-meaning-hint" id="listening-meaning-hint"></div>
+            </div>
+
+            <!-- Input form -->
+            <div class="typing-form">
+              <div class="typing-input-group">
+                <input type="text" id="listening-input" class="typing-input" placeholder="Gõ lại từ bạn vừa nghe được..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+              </div>
+
+              <!-- Feedback Banner -->
+              <div class="typing-feedback hidden" id="listening-feedback"></div>
+
+              <!-- Action buttons -->
+              <div class="typing-actions-row">
+                <button type="button" class="btn btn-primary btn-typing-submit" id="btn-listening-submit">
+                  <span>Kiểm tra</span>
+                  <kbd class="shortcut-tag">Enter</kbd>
+                </button>
+                <button type="button" class="btn btn-primary btn-typing-next hidden" id="btn-listening-next">
+                  <span>Câu tiếp theo</span>
+                  <kbd class="shortcut-tag">Enter</kbd>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listening Result Screen -->
+        <div id="listening-result-wrapper" class="listening-result-wrapper hidden">
+          <div class="listening-result-card">
+            <div class="result-trophy">🎧</div>
+            <h2 class="listening-result-title">Hoàn thành bài Nghe–Viết!</h2>
+            <div class="listening-result-badge badge-result-excellent" id="listening-result-badge">Xuất sắc! 🔥</div>
+
+            <div class="listening-score-circle">
+              <span class="listening-result-score" id="listening-result-score">0 / 0</span>
+              <span class="listening-result-percent" id="listening-result-percent">0%</span>
+            </div>
+
+            <p class="listening-result-desc" id="listening-result-desc">Đôi tai IELTS cực bén! Bạn đã nhận diện và viết chính xác hầu hết các từ phát âm.</p>
+
+            <div class="listening-result-actions">
+              <button type="button" class="btn btn-primary" id="btn-listening-retry">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                Luyện nghe lại
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-listening-to-typing">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Chuyển sang Gõ từ
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-listening-back-flashcard">Quay lại Lật thẻ</button>
+              <button type="button" class="btn btn-ghost" id="btn-listening-back-sets">Về danh sách bộ từ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           SUB-MODE 6: SPRINT 6 (Task F13) CLOZE STAGE
+           ============================================== -->
+      <div id="cloze-stage" class="cloze-stage hidden">
+        <!-- Cloze Header Bar -->
+        <div class="cloze-header-bar">
+          <div class="cloze-header-meta">
+            <span class="cloze-progress-text" id="cloze-progress-text">Câu 1 / 10</span>
+            <span class="cloze-score-tracker" id="cloze-score-tracker">Điểm: 0</span>
+          </div>
+          <div class="cloze-progress-track">
+            <div class="cloze-progress-bar" id="cloze-progress-bar" style="width: 10%;"></div>
+          </div>
+        </div>
+
+        <!-- Cloze Loading State -->
+        <div id="cloze-loading" class="state-container loading-state hidden">
+          <div class="card-skeleton"><div class="skeleton-shimmer"></div></div>
+          <p>Đang chuẩn bị câu hỏi điền từ...</p>
+        </div>
+
+        <!-- Cloze Empty State -->
+        <div id="cloze-empty" class="state-container empty-state hidden">
+          <div class="state-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="8" y1="18" x2="16" y2="18"></line>
+            </svg>
+          </div>
+          <h3>Bộ từ vựng trống</h3>
+          <p>Không có câu ví dụ để luyện điền từ vào chỗ trống.</p>
+          <button type="button" class="btn btn-primary" id="btn-empty-cloze-back">Quay lại Flashcard</button>
+        </div>
+
+        <!-- Cloze Error State -->
+        <div id="cloze-error" class="state-container error-state hidden">
+          <div class="state-icon error-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3>Không thể tải bài học</h3>
+          <p>Đã xảy ra lỗi trong quá trình tải dữ liệu bài điền từ.</p>
+          <button type="button" class="btn btn-primary" id="btn-retry-cloze">Thử lại</button>
+        </div>
+
+        <!-- Active Cloze Card Wrapper -->
+        <div id="cloze-card-wrapper" class="cloze-card-wrapper">
+          <div class="cloze-card">
+            <div class="cloze-card-header">
+              <span class="cloze-badge-mode">Điền từ vào chỗ trống</span>
+              <span class="badge badge-wordtype hidden" id="cloze-word-type">Từ vựng</span>
+            </div>
+
+            <!-- Sentence with blank -->
+            <div class="cloze-prompt-section">
+              <span class="cloze-prompt-label">Đọc câu và điền từ thích hợp vào chỗ trống:</span>
+              <blockquote class="cloze-sentence-en" id="cloze-sentence-en">--</blockquote>
+              <p class="cloze-translation-vi hidden" id="cloze-translation-vi">--</p>
+              <div class="cloze-hints-row">
+                <span class="cloze-meaning-hint" id="cloze-meaning-hint">Nghĩa: --</span>
+                <span class="cloze-phonetic-hint hidden" id="cloze-phonetic-hint">/--/</span>
+              </div>
+            </div>
+
+            <!-- Input form -->
+            <div class="typing-form">
+              <div class="typing-input-group">
+                <input type="text" id="cloze-input" class="typing-input" placeholder="Gõ từ còn thiếu..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <button type="button" class="btn-audio-circle" id="btn-cloze-audio" title="Nghe từ mẫu (P)" aria-label="Phát âm">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Feedback Banner -->
+              <div class="typing-feedback hidden" id="cloze-feedback"></div>
+
+              <!-- Action buttons -->
+              <div class="typing-actions-row">
+                <button type="button" class="btn btn-primary btn-typing-submit" id="btn-cloze-submit">
+                  <span>Kiểm tra</span>
+                  <kbd class="shortcut-tag">Enter</kbd>
+                </button>
+                <button type="button" class="btn btn-primary btn-typing-next hidden" id="btn-cloze-next">
+                  <span>Câu tiếp theo</span>
+                  <kbd class="shortcut-tag">Enter</kbd>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cloze Result Screen -->
+        <div id="cloze-result-wrapper" class="cloze-result-wrapper hidden">
+          <div class="cloze-result-card">
+            <div class="result-trophy">📖</div>
+            <h2 class="cloze-result-title">Hoàn thành bài Điền từ!</h2>
+            <div class="cloze-result-badge badge-result-excellent" id="cloze-result-badge">Xuất sắc! 🔥</div>
+
+            <div class="cloze-score-circle">
+              <span class="cloze-result-score" id="cloze-result-score">0 / 0</span>
+              <span class="cloze-result-percent" id="cloze-result-percent">0%</span>
+            </div>
+
+            <p class="cloze-result-desc" id="cloze-result-desc">Khả năng ứng dụng từ vựng vào ngữ cảnh câu ví dụ của bạn rất tốt!</p>
+
+            <div class="cloze-result-actions">
+              <button type="button" class="btn btn-primary" id="btn-cloze-retry">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                Luyện điền lại
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-cloze-to-mixed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                Làm bài Tổng hợp
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-cloze-back-flashcard">Quay lại Lật thẻ</button>
+              <button type="button" class="btn btn-ghost" id="btn-cloze-back-sets">Về danh sách bộ từ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           SUB-MODE 7: SPRINT 6 (Task F14) MIXED STAGE
+           ============================================== -->
+      <div id="mixed-stage" class="mixed-stage hidden">
+        <!-- Mixed Header Bar -->
+        <div class="mixed-header-bar">
+          <div class="mixed-header-meta">
+            <div class="mixed-meta-left">
+              <span class="mixed-progress-text" id="mixed-progress-text">Câu 1 / 10</span>
+              <span class="mixed-type-badge badge-type-quiz" id="mixed-type-badge">Dạng 1: Trắc nghiệm</span>
+            </div>
+            <span class="mixed-score-tracker" id="mixed-score-tracker">Điểm: 0</span>
+          </div>
+          <div class="mixed-progress-track">
+            <div class="mixed-progress-bar" id="mixed-progress-bar" style="width: 10%;"></div>
+          </div>
+        </div>
+
+        <!-- Mixed Loading State -->
+        <div id="mixed-loading" class="state-container loading-state hidden">
+          <div class="card-skeleton"><div class="skeleton-shimmer"></div></div>
+          <p>Đang chuẩn bị đề bài tổng hợp 4 kỹ năng...</p>
+        </div>
+
+        <!-- Mixed Empty State -->
+        <div id="mixed-empty" class="state-container empty-state hidden">
+          <div class="state-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <h3>Bộ từ vựng trống</h3>
+          <p>Không có đủ dữ liệu từ vựng để tạo bài thi tổng hợp.</p>
+          <button type="button" class="btn btn-primary" id="btn-empty-mixed-back">Quay lại Flashcard</button>
+        </div>
+
+        <!-- Mixed Error State -->
+        <div id="mixed-error" class="state-container error-state hidden">
+          <div class="state-icon error-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3>Không thể tải bài học</h3>
+          <p>Đã xảy ra lỗi trong quá trình khởi tạo bài thi tổng hợp.</p>
+          <button type="button" class="btn btn-primary" id="btn-retry-mixed">Thử lại</button>
+        </div>
+
+        <!-- Active Mixed Card Wrapper -->
+        <div id="mixed-card-wrapper" class="mixed-card-wrapper">
+          <div class="mixed-card" id="mixed-content-area">
+            <!-- Dynamically populated per question type -->
+          </div>
+        </div>
+
+        <!-- Mixed Result Screen -->
+        <div id="mixed-result-wrapper" class="mixed-result-wrapper hidden">
+          <div class="mixed-result-card">
+            <div class="result-trophy">🏆</div>
+            <h2 class="mixed-result-title">Hoàn thành bài Tổng hợp!</h2>
+            <div class="mixed-result-badge badge-result-perfect" id="mixed-result-badge">IELTS Antigravity Master 🏆</div>
+
+            <div class="mixed-score-circle">
+              <span class="mixed-result-score" id="mixed-result-score">0 / 0</span>
+              <span class="mixed-result-percent" id="mixed-result-percent">0%</span>
+            </div>
+
+            <!-- Breakdown 4 Kỹ năng -->
+            <div class="mixed-breakdown-section">
+              <h4 class="breakdown-heading">Phân tích kết quả theo 4 dạng bài:</h4>
+              <div class="mixed-breakdown-grid" id="mixed-breakdown-grid">
+                <!-- Dynamically populated breakdown -->
+              </div>
+            </div>
+
+            <p class="mixed-result-desc" id="mixed-result-desc">Phong độ xuất sắc toàn diện! Bạn làm chủ cả 4 kỹ năng Nhận biết, Viết chính tả, Nghe phát âm và Vận dụng ngữ cảnh.</p>
+
+            <div class="mixed-result-actions">
+              <button type="button" class="btn btn-primary" id="btn-mixed-retry">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                Luyện lại bài Tổng hợp
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-mixed-back-flashcard">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                Quay lại Lật thẻ
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-mixed-back-sets">Về danh sách bộ từ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPRINT 2 & 3: THANH "CHẾ ĐỘ HỌC" (LEARNING MODES BAR) -->
+      <div class="learning-modes-bar" id="learning-modes-bar">
+        <div class="modes-bar-container">
+          <span class="modes-bar-title">Chế độ học:</span>
+          <div class="modes-list">
+            <!-- Mode 1: Flashcard (Active) -->
+            <button type="button" class="mode-tab active" id="mode-tab-flashcard">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+              <span>Lật thẻ</span>
+            </button>
+
+            <!-- Mode 2: Quiz (SPRINT 3: TASK F7 KÍCH HOẠT) -->
+            <button type="button" class="mode-tab" id="mode-tab-quiz" title="Chế độ Trắc nghiệm 4 đáp án (Sprint 3)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span>Trắc nghiệm</span>
+            </button>
+
+            <!-- Mode 3: Matching (SPRINT 4: TASK F9 & F10 KÍCH HOẠT) -->
+            <button type="button" class="mode-tab" id="mode-tab-matching" title="Chế độ Ghép thẻ 2 cột (Sprint 4)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>Ghép thẻ</span>
+            </button>
+
+            <!-- Mode 4: Typing / Spelling (SPRINT 5: TASK F11 KÍCH HOẠT) -->
+            <button type="button" class="mode-tab" id="mode-tab-typing" title="Chế độ Gõ từ tiếng Anh (Sprint 5)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              <span>Gõ từ</span>
+            </button>
+
+            <!-- Mode 5: Listening / Dictation (SPRINT 5: TASK F12 KÍCH HOẠT) -->
+            <button type="button" class="mode-tab" id="mode-tab-listening" title="Chế độ Nghe–Viết (Sprint 5)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+              </svg>
+              <span>Nghe–Viết</span>
+            </button>
+
+            <!-- Mode 6: Cloze / Fill in the blank (SPRINT 6: TASK F13 KÍCH HOẠT) -->
+            <button type="button" class="mode-tab" id="mode-tab-cloze" title="Chế độ Điền từ vào chỗ trống (Sprint 6)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="8" y1="18" x2="16" y2="18"></line>
+              </svg>
+              <span>Điền từ</span>
+            </button>
+
+            <!-- Mode 7: Mixed / Comprehensive (SPRINT 6: TASK F14 KÍCH HOẠT) -->
+            <button type="button" class="mode-tab" id="mode-tab-mixed" title="Chế độ Tổng hợp 4 dạng bài (Sprint 6)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span>Tổng hợp</span>
+              <span class="badge-mix">PRO</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         VIEW 3: BỘ THẺ CỦA TÔI (SPRINT 7: TASK F15 - ẢNH 1)
+         ======================================================== -->
+    <section id="view-my-decks" class="view-section">
+      <div class="view-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.4rem;">
+            <h2 class="view-title" style="margin: 0;">Bộ thẻ của tôi</h2>
+            <div class="quota-badge-pill" id="my-decks-quota-badge">
+              <span>Đang tải bộ thẻ...</span>
+            </div>
+          </div>
+          <p class="view-desc">Quản lý các bộ thẻ cá nhân, phân nhóm từ vựng theo chủ đề và nhập hàng loạt từ Excel/CSV.</p>
+        </div>
+        <div class="view-controls">
+          <div class="search-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="my-decks-search-input" placeholder="Tìm bộ thẻ của bạn..." autocomplete="off">
+          </div>
+          <button type="button" class="btn btn-secondary" id="btn-refresh-my-decks" title="Làm mới danh sách bộ thẻ">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+            </svg>
+            Làm mới
+          </button>
+          <button type="button" class="btn btn-primary" id="btn-open-create-deck" title="Tạo bộ thẻ mới">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Tạo Bộ Thẻ
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State for My Decks -->
+      <div id="my-decks-loading" class="state-container loading-state">
+        <div class="my-decks-grid skeleton-grid">
+          <div class="set-card-skeleton"></div>
+          <div class="set-card-skeleton"></div>
+          <div class="set-card-skeleton"></div>
+        </div>
+      </div>
+
+      <!-- Empty State for My Decks -->
+      <div id="my-decks-empty" class="state-container empty-state hidden">
+        <div class="empty-icon-wrap">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </div>
+        <h3 class="state-title">Chưa có bộ thẻ nào</h3>
+        <p class="state-desc">Bạn chưa tạo bộ thẻ từ vựng cá nhân nào. Hãy bấm nút dưới đây để tạo bộ thẻ đầu tiên của bạn!</p>
+        <button type="button" class="btn btn-primary" id="btn-empty-create-deck">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Tạo Bộ Thẻ Đầu Tiên
+        </button>
+      </div>
+
+      <!-- Error State for My Decks -->
+      <div id="my-decks-error" class="state-container error-state hidden">
+        <div class="error-icon-wrap">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h3 class="state-title">Lỗi kết nối bộ thẻ</h3>
+        <p class="state-desc" id="my-decks-error-desc">Không thể tải danh sách bộ thẻ từ máy chủ.</p>
+        <div class="error-meta" id="my-decks-error-code">Mã lỗi: DECK_FETCH_ERROR</div>
+        <button type="button" class="btn btn-primary" id="btn-retry-my-decks">Thử lại</button>
+      </div>
+
+      <!-- My Decks Grid -->
+      <div id="my-decks-container" class="my-decks-grid">
+        <!-- Dynamically rendered via MyDecksController -->
+      </div>
+    </section>
+
+    <!-- ========================================================
+         VIEW 4: CHI TIẾT DECK & NHÓM THẺ (SPRINT 7: TASK F16 - ẢNH 2)
+         ======================================================== -->
+    <section id="view-deck-detail" class="view-section">
+      <!-- Back Banner -->
+      <div class="view-back-banner">
+        <button type="button" class="btn btn-ghost btn-back" id="btn-back-to-my-decks">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Quay lại Bộ thẻ của tôi</span>
+        </button>
+      </div>
+
+      <!-- Deck Detail Header Card (Ảnh 2) -->
+      <div class="deck-detail-header-card">
+        <div class="deck-detail-info">
+          <div class="deck-detail-title-row">
+            <h2 class="deck-detail-title" id="deck-detail-title">Tên Bộ Thẻ</h2>
+            <span class="deck-status-badge draft" id="deck-detail-status-badge">Bản Nháp</span>
+          </div>
+          <div class="deck-meta-chips" style="margin-top: 0.5rem;">
+            <span class="deck-chip" id="deck-detail-card-count">0 thẻ</span>
+            <span class="deck-chip" id="deck-detail-group-count">0 nhóm</span>
+            <span class="deck-chip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
+              en-vi
+            </span>
+          </div>
+        </div>
+
+        <div class="deck-detail-actions">
+          <button type="button" class="btn btn-primary" id="btn-study-deck-detail" title="Bắt đầu học các thẻ trong bộ này">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Học ngay
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-share-deck-detail" title="Chia sẻ bộ thẻ qua liên kết">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            Chia sẻ
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-open-import-deck-detail" title="Nhập danh sách thẻ từ Excel hoặc CSV">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            Nhập Excel/CSV
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-open-create-group" title="Tạo nhóm thẻ mới trong bộ">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              <line x1="12" y1="11" x2="12" y2="17"></line>
+              <line x1="9" y1="14" x2="15" y2="14"></line>
+            </svg>
+            + Tạo Nhóm
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-publish-deck" title="Công bố bộ thẻ này ra cộng đồng">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span>Công bố</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Groups Section -->
+      <div class="groups-section-header">
+        <h3 class="groups-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Nhóm thẻ từ vựng
+        </h3>
+      </div>
+
+      <!-- Loading State for Groups -->
+      <div id="groups-loading" class="state-container loading-state">
+        <div class="groups-grid skeleton-grid">
+          <div class="set-card-skeleton" style="height: 120px;"></div>
+          <div class="set-card-skeleton" style="height: 120px;"></div>
+        </div>
+      </div>
+
+      <!-- Empty State for Groups -->
+      <div id="groups-empty" class="state-container empty-state hidden">
+        <div class="empty-icon-wrap">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <h3 class="state-title">Chưa có nhóm thẻ nào</h3>
+        <p class="state-desc">Hãy tạo nhóm để phân loại và thêm các thẻ từ vựng vào bộ thẻ này.</p>
+        <button type="button" class="btn btn-primary" id="btn-empty-create-group">
+          + Tạo Nhóm Đầu Tiên
+        </button>
+      </div>
+
+      <!-- Error State for Groups -->
+      <div id="groups-error" class="state-container error-state hidden">
+        <h3 class="state-title">Lỗi tải danh sách nhóm</h3>
+        <p class="state-desc" id="groups-error-desc">Không thể tải các nhóm của bộ thẻ này.</p>
+        <div class="error-meta" id="groups-error-code">Mã lỗi: GROUP_FETCH_ERROR</div>
+        <button type="button" class="btn btn-primary" id="btn-retry-groups">Thử lại</button>
+      </div>
+
+      <!-- Groups Grid Container -->
+      <div id="groups-container" class="groups-grid">
+        <!-- Dynamically rendered via DeckDetailController -->
+      </div>
+    </section>
+
+    <!-- ========================================================
+         VIEW 5: TRANG XEM BỘ THẺ ĐƯỢC CHIA SẺ (SPRINT 8: TASK F18 - §13)
+         ======================================================== -->
+    <section id="view-shared-deck" class="view-section">
+      <!-- Back Banner -->
+      <div class="view-back-banner">
+        <button type="button" class="btn btn-ghost btn-back" id="btn-back-shared-home">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Quay lại trang chủ</span>
+        </button>
+      </div>
+
+      <!-- Shared Deck Banner Card -->
+      <div class="deck-detail-header-card">
+        <div class="deck-detail-info">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem;">
+            🔗 BỘ THẺ ĐƯỢC CHIA SẺ CỘNG ĐỒNG
+          </div>
+          <div class="deck-detail-title-row">
+            <h2 class="deck-detail-title" id="shared-deck-title">Đang tải...</h2>
+            <span class="deck-status-badge published" id="shared-deck-status-badge">Đã công bố</span>
+          </div>
+          <div class="deck-meta-chips" style="margin-top: 0.5rem;">
+            <span class="deck-chip" id="shared-deck-card-count">0 thẻ</span>
+            <span class="deck-chip" id="shared-deck-group-count">0 nhóm</span>
+            <span class="deck-chip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
+              en-vi
+            </span>
+          </div>
+        </div>
+
+        <div class="deck-detail-actions">
+          <button type="button" class="btn btn-primary" id="btn-study-shared-deck" title="Học ngay bộ thẻ này qua Flashcard 3D">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Học ngay
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-clone-shared-deck" title="Lưu bản sao bộ thẻ này về tài khoản của bạn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Lưu về Bộ thẻ của tôi
+          </button>
+          <button type="button" class="btn btn-ghost" id="btn-copy-shared-link" title="Sao chép liên kết chia sẻ">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            Sao chép link
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State for Shared Deck -->
+      <div id="shared-deck-loading" class="state-container loading-state">
+        <div class="my-decks-grid skeleton-grid">
+          <div class="set-card-skeleton" style="height: 180px;"></div>
+          <div class="set-card-skeleton" style="height: 180px;"></div>
+        </div>
+      </div>
+
+      <!-- Empty State for Shared Deck -->
+      <div id="shared-deck-empty" class="state-container empty-state hidden">
+        <div class="empty-icon-wrap">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+          </svg>
+        </div>
+        <h3 class="state-title">Bộ thẻ chưa có từ vựng</h3>
+        <p class="state-desc">Bộ thẻ này hiện chưa có thẻ từ vựng nào được thêm vào.</p>
+        <button type="button" class="btn btn-primary" id="btn-empty-shared-back-home">Về trang chủ</button>
+      </div>
+
+      <!-- Error State for Shared Deck -->
+      <div id="shared-deck-error" class="state-container error-state hidden">
+        <div class="error-icon-wrap">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h3 class="state-title">Không tìm thấy bộ thẻ</h3>
+        <p class="state-desc" id="shared-deck-error-desc">Bộ thẻ không tồn tại, chưa được công bố hoặc liên kết chia sẻ đã hết hạn.</p>
+        <div class="error-meta" id="shared-deck-error-code">Mã lỗi: DECK_NOT_FOUND</div>
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem;">
+          <button type="button" class="btn btn-secondary" id="btn-retry-shared-deck">Thử lại</button>
+          <button type="button" class="btn btn-primary" id="btn-error-shared-back-home">Về trang chủ</button>
+        </div>
+      </div>
+
+      <!-- Shared Deck Content Container -->
+      <div id="shared-deck-content" class="hidden">
+        <!-- Groups breakdown summary -->
+        <div id="shared-deck-groups-summary"></div>
+
+        <!-- Cards List Table -->
+        <div class="groups-section-header">
+          <h3 class="groups-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+            </svg>
+            Danh sách từ vựng trong bộ thẻ
+          </h3>
+        </div>
+
+        <div class="preview-table-container" style="max-height: 550px;">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Từ vựng</th>
+                <th>Phiên âm</th>
+                <th>Loại từ</th>
+                <th>Nghĩa tiếng Việt</th>
+                <th>Ví dụ ngữ cảnh</th>
+              </tr>
+            </thead>
+            <tbody id="shared-cards-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <span>IELTS Vocab Flashcards • Built by Gemini (Antigravity UI/UX)</span>
+      <span class="footer-contract-tag">API Contract: <code>/api/v1</code> (Sprint 13 Task F24)</span>
+    </div>
+  </footer>
+</div>
+
+<!-- COMPLETION MODAL -->
+<div class="modal-backdrop" id="completion-modal" aria-hidden="true">
+  <div class="modal-card modal-celebrate">
+    <div class="celebrate-icon">🎉</div>
+    <h2 class="modal-title">Chúc mừng bạn!</h2>
+    <p class="modal-desc" id="completion-text">Bạn đã hoàn thành toàn bộ thẻ trong bộ từ vựng này.</p>
+    
+    <div class="completion-stats">
+      <div class="stat-box">
+        <span class="stat-number" id="comp-stat-total">10</span>
+        <span class="stat-label">Tổng số thẻ</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-number" id="comp-stat-mastered">0</span>
+        <span class="stat-label">Đã nhớ</span>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" id="btn-modal-restart">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+          <path d="M3 3v5h5"></path>
+        </svg>
+        Học lại từ đầu
+      </button>
+      <button type="button" class="btn btn-secondary" id="btn-modal-shuffle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 3 21 3 21 8"></polyline>
+          <line x1="4" y1="20" x2="21" y2="3"></line>
+          <polyline points="21 16 21 21 16 21"></polyline>
+        </svg>
+        Trộn & học lại
+      </button>
+      <button type="button" class="btn btn-ghost" id="btn-modal-back-sets">Về danh sách bộ từ</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHORTCUTS MODAL -->
+<div class="modal-backdrop" id="shortcuts-modal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Phím tắt thao tác nhanh</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-shortcuts" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="shortcuts-grid">
+        <div class="shortcut-item">
+          <span class="shortcut-action">Lật thẻ (Mặt trước / Mặt sau)</span>
+          <span class="shortcut-keys"><kbd>Space</kbd> hoặc <kbd>Enter</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Thẻ tiếp theo / Câu tiếp (Quiz)</span>
+          <span class="shortcut-keys"><kbd>→</kbd> hoặc <kbd>D</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Thẻ trước đó</span>
+          <span class="shortcut-keys"><kbd>←</kbd> hoặc <kbd>A</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Chấm điểm Flashcard: Quên / Mơ hồ / Nhớ / Nhớ rồi</span>
+          <span class="shortcut-keys"><kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>, <kbd>4</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Chọn đáp án trong bài Quiz</span>
+          <span class="shortcut-keys"><kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>, <kbd>4</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Ghép thẻ: Chọn cặp từ và nghĩa</span>
+          <span class="shortcut-keys"><kbd>Nhấp chuột</kbd> hoặc <kbd>Enter</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Xáo trộn thẻ (Shuffle)</span>
+          <span class="shortcut-keys"><kbd>S</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Gõ từ / Nghe–Viết: Kiểm tra & Tiếp tục</span>
+          <span class="shortcut-keys"><kbd>Enter</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Nghe phát âm (Listening / Cloze / Flashcard)</span>
+          <span class="shortcut-keys"><kbd>P</kbd> hoặc <kbd>Space</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Điền từ / Tổng hợp: Kiểm tra & Tiếp tục</span>
+          <span class="shortcut-keys"><kbd>Enter</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Học lại / Chơi lại ván mới</span>
+          <span class="shortcut-keys"><kbd>R</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Xem bảng phím tắt này</span>
+          <span class="shortcut-keys"><kbd>H</kbd></span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-action">Đóng hộp thoại</span>
+          <span class="shortcut-keys"><kbd>Esc</kbd></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-backdrop" id="settings-modal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Cấu hình kết nối API</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-settings" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="input-api-url" class="form-label">API Base URL (Theo API Contract):</label>
+        <input type="text" id="input-api-url" class="form-input" value="http://localhost:8000/api/v1">
+        <span class="form-help">Mặc định: <code>http://localhost:8000/api/v1</code> (CORS: <code>http://localhost:3000</code>).</span>
+      </div>
+
+      <div class="api-debug-box">
+        <div class="debug-title">Kiểm tra kết nối hiện tại:</div>
+        <div class="debug-status" id="settings-debug-status">Đang kết nối...</div>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-test-api">Kiểm tra GET /health</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" id="btn-save-settings">Lưu & Kết nối lại</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SPRINT 7 MODALS (TASK F15, F16, F17)
+     ======================================================== -->
+
+<!-- 1. CREATE DECK MODAL -->
+<div class="modal-backdrop" id="modal-create-deck" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Tạo bộ thẻ mới</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-create-deck" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="input-create-deck-title" class="form-label">Tên bộ thẻ (Title)*:</label>
+        <input type="text" id="input-create-deck-title" class="form-input" placeholder="Ví dụ: IELTS Writing Task 2 - Chủ đề Môi trường" autocomplete="off">
+        <span class="form-help">Nhập tên để tạo bộ thẻ từ vựng cá nhân mới.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btn-cancel-create-deck">Hủy</button>
+      <button type="button" class="btn btn-primary" id="btn-submit-create-deck">Tạo bộ thẻ</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. EDIT DECK MODAL -->
+<div class="modal-backdrop" id="modal-edit-deck" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Đổi tên bộ thẻ</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-edit-deck" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="input-edit-deck-title" class="form-label">Tên mới của bộ thẻ*:</label>
+        <input type="text" id="input-edit-deck-title" class="form-input" autocomplete="off">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btn-cancel-edit-deck">Hủy</button>
+      <button type="button" class="btn btn-primary" id="btn-submit-edit-deck">Lưu thay đổi</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. DELETE DECK MODAL -->
+<div class="modal-backdrop" id="modal-delete-deck" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title" style="color: var(--accent-rose);">Xác nhận xóa bộ thẻ</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-delete-deck" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color: var(--text-secondary); line-height: 1.5;">
+        Bạn có chắc chắn muốn xóa bộ thẻ <strong id="delete-deck-name" style="color: var(--text-main);"></strong>?
+      </p>
+      <p style="color: var(--accent-rose); font-size: 0.82rem; margin-top: 0.5rem;">
+        Hành động này sẽ xóa vĩnh viễn bộ thẻ và toàn bộ nhóm thẻ, từ vựng bên trong. Không thể khôi phục!
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btn-cancel-delete-deck">Hủy bỏ</button>
+      <button type="button" class="btn btn-primary" id="btn-confirm-delete-deck" style="background: var(--accent-rose); border-color: var(--accent-rose);">Xác nhận xóa</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. CREATE GROUP MODAL -->
+<div class="modal-backdrop" id="modal-create-group" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Tạo nhóm thẻ mới</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-create-group" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="input-create-group-title" class="form-label">Tên nhóm (Group Title)*:</label>
+        <input type="text" id="input-create-group-title" class="form-input" placeholder="Ví dụ: Unit 1: Environment & Climate" autocomplete="off">
+        <span class="form-help">Nhóm giúp bạn phân chia từ vựng theo chủ đề hoặc bài học.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btn-cancel-create-group">Hủy</button>
+      <button type="button" class="btn btn-primary" id="btn-submit-create-group">Tạo nhóm</button>
+    </div>
+  </div>
+</div>
+
+<!-- 5. EDIT GROUP MODAL -->
+<div class="modal-backdrop" id="modal-edit-group" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Đổi tên nhóm</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-edit-group" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="input-edit-group-title" class="form-label">Tên nhóm mới*:</label>
+        <input type="text" id="input-edit-group-title" class="form-input" autocomplete="off">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btn-cancel-edit-group">Hủy</button>
+      <button type="button" class="btn btn-primary" id="btn-submit-edit-group">Lưu thay đổi</button>
+    </div>
+  </div>
+</div>
+
+<!-- 6. DELETE GROUP MODAL -->
+<div class="modal-backdrop" id="modal-delete-group" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title" style="color: var(--accent-rose);">Xác nhận xóa nhóm thẻ</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-delete-group" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color: var(--text-secondary); line-height: 1.5;">
+        Bạn có chắc muốn xóa nhóm <strong id="delete-group-name" style="color: var(--text-main);"></strong>?
+      </p>
+      <p style="color: var(--accent-rose); font-size: 0.82rem; margin-top: 0.5rem;">
+        Các thẻ từ vựng trong nhóm này cũng sẽ bị xóa khỏi bộ thẻ.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btn-cancel-delete-group">Hủy bỏ</button>
+      <button type="button" class="btn btn-primary" id="btn-confirm-delete-group" style="background: var(--accent-rose); border-color: var(--accent-rose);">Xác nhận xóa</button>
+    </div>
+  </div>
+</div>
+
+<!-- 7. CARD FORM MODAL (SPRINT 7: TASK F16 - ẢNH 3) -->
+<div class="modal-backdrop" id="modal-card-form" aria-hidden="true">
+  <div class="modal-card card-form-modal">
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title">Tạo thẻ từ vựng mới</h3>
+        <p class="modal-subtitle" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">
+          Thêm vào nhóm: <strong id="card-form-group-title" style="color: #a5b4fc;"></strong>
+        </p>
+      </div>
+      <button type="button" class="btn-close-modal" id="btn-close-card-form" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+      <!-- Quick Dictionary Search -->
+      <div class="form-group">
+        <label for="input-card-search" class="form-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Tìm từ vựng nhanh (Gợi ý tự động điền):
+        </label>
+        <input type="text" id="input-card-search" class="form-input" placeholder="Gõ thử: sustainable, innovation, biodiversity, mitigate..." autocomplete="off">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <!-- Front (English) -->
+        <div class="form-group">
+          <label for="input-card-front" class="form-label">Từ vựng (Tiếng Anh)*:</label>
+          <input type="text" id="input-card-front" class="form-input" placeholder="Ví dụ: sustainable" autocomplete="off">
+          <span class="field-error-msg" id="error-card-front">Từ vựng bắt buộc phải có!</span>
+        </div>
+
+        <!-- Back / Meaning (Vietnamese) -->
+        <div class="form-group">
+          <label for="input-card-meaning" class="form-label">Bản dịch / Định nghĩa (Tiếng Việt)*:</label>
+          <input type="text" id="input-card-meaning" class="form-input" placeholder="Ví dụ: bền vững" autocomplete="off">
+          <span class="field-error-msg" id="error-card-meaning">Bản dịch bắt buộc phải có!</span>
+        </div>
+      </div>
+
+      <!-- Word Types (13 kinds) -->
+      <div class="form-group">
+        <label class="form-label">Loại từ (13 loại từ IELTS):</label>
+        <div class="word-type-grid" id="word-type-grid">
+          <!-- Dynamically populated via DeckDetailController -->
+        </div>
+      </div>
+
+      <!-- Phonetic IPA -->
+      <div class="form-group">
+        <label for="input-card-phonetic" class="form-label">Phiên âm IPA:</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="input-card-phonetic" class="form-input" placeholder="Ví dụ: /səˈsteɪ.nə.bəl/" style="font-family: var(--font-mono);">
+          <button type="button" class="btn btn-secondary btn-icon" id="btn-pronounce-phonetic" title="Phát âm thử từ này" aria-label="Phát âm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Example Sentence -->
+      <div class="form-group">
+        <label for="input-card-example" class="form-label">Câu ví dụ ngữ cảnh (Tiếng Anh):</label>
+        <input type="text" id="input-card-example" class="form-input" placeholder="Ví dụ: We need to adopt sustainable energy sources." autocomplete="off">
+      </div>
+
+      <!-- Example Translation -->
+      <div class="form-group">
+        <label for="input-card-example-vi" class="form-label">Bản dịch câu ví dụ (Tiếng Việt):</label>
+        <input type="text" id="input-card-example-vi" class="form-input" placeholder="Ví dụ: Chúng ta cần áp dụng các nguồn năng lượng bền vững." autocomplete="off">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btn-cancel-card-form">Hủy</button>
+      <button type="button" class="btn btn-secondary" id="btn-save-and-continue-card">Lưu & Tạo tiếp</button>
+      <button type="button" class="btn btn-primary" id="btn-save-card">Lưu thẻ</button>
+    </div>
+  </div>
+</div>
+
+<!-- 8. IMPORT CARDS MODAL (SPRINT 7: TASK F17 - ẢNH 4 & 5) -->
+<div class="modal-backdrop" id="modal-import-cards" aria-hidden="true">
+  <div class="modal-card import-modal">
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title">Nhập thẻ từ vựng hàng loạt</h3>
+        <p class="modal-subtitle" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">
+          Hỗ trợ tải tệp CSV/Excel hoặc dán nhanh bằng văn bản theo đúng Contract §12
+        </p>
+      </div>
+      <button type="button" class="btn-close-modal" id="btn-close-import-modal" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body" style="max-height: 72vh; overflow-y: auto;">
+      <!-- Target Group Selector -->
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label for="select-import-target-group" class="form-label">Chọn nhóm cần thêm thẻ vào*:</label>
+        <select id="select-import-target-group" class="form-input" style="font-weight: 600;">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+
+      <!-- Two Tabs Header -->
+      <div class="import-tabs-header">
+        <button type="button" class="import-tab-btn active" id="tab-btn-import-file">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          Tab 1: Tệp (Excel / CSV)
+        </button>
+        <button type="button" class="import-tab-btn" id="tab-btn-import-paste">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="4 7 4 4 20 4 20 7"></polyline>
+            <line x1="9" y1="20" x2="15" y2="20"></line>
+            <line x1="12" y1="4" x2="12" y2="20"></line>
+          </svg>
+          Tab 2: Dán nhanh (Fast Paste)
+        </button>
+      </div>
+
+      <!-- TAB 1: FILE UPLOAD PANE (Ảnh 4) -->
+      <div class="import-tab-pane active" id="tab-pane-import-file">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 0.85rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-download-import-template">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Tải tệp mẫu CSV chuẩn 7 cột
+          </button>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="file-dropzone" id="file-import-dropzone">
+          <div class="dropzone-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div>
+            <p style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">Kéo thả tệp vào đây hoặc nhấn để chọn tệp</p>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">Hỗ trợ định dạng <code>.csv</code>, <code>.xlsx</code></p>
+          </div>
+          <input type="file" id="input-file-import" accept=".csv, .xlsx, .xls, text/csv" style="display: none;">
+        </div>
+
+        <div id="file-info-banner" class="hidden" style="margin-top: 0.75rem; font-size: 0.85rem; color: #a5b4fc;">
+          Tệp đã chọn: <strong id="file-name-text"></strong>
+        </div>
+
+        <!-- Preview Table File -->
+        <div id="preview-table-file-container" class="hidden">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; margin-bottom: 0.4rem;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-secondary);">BẢNG XEM TRƯỚC:</span>
+            <span id="file-valid-count-text" style="font-size: 0.82rem; color: var(--accent-emerald); font-weight: 700;">0 thẻ hợp lệ</span>
+          </div>
+          <div class="preview-table-container">
+            <table class="preview-table">
+              <thead>
+                <tr>
+                  <th>Từ vựng</th>
+                  <th>Phiên âm</th>
+                  <th>Loại từ</th>
+                  <th>Nghĩa tiếng Việt</th>
+                  <th>Ví dụ</th>
+                </tr>
+              </thead>
+              <tbody id="preview-table-file-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="result-banner-file" class="import-result-banner"></div>
+
+        <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+          <button type="button" class="btn btn-primary" id="btn-submit-file-import" disabled>Nhập thẻ</button>
+        </div>
+      </div>
+
+      <!-- TAB 2: FAST PASTE PANE (Ảnh 5) -->
+      <div class="import-tab-pane" id="tab-pane-import-paste">
+        <!-- 1-Click Copy Prompt Box -->
+        <div class="prompt-copy-box">
+          <div class="prompt-copy-text">
+            <strong>Mẹo tạo từ vựng bằng AI:</strong> Bấm nút bên cạnh để sao chép câu lệnh tạo danh sách từ vựng chuẩn định dạng 7 cột cho ChatGPT/Claude.
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-ai-prompt" style="white-space: nowrap;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Sao chép câu lệnh AI
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label for="textarea-fast-paste" class="form-label">
+            Dán dữ liệu từ vựng (phân cách bằng dấu <code>|</code>, Tab hoặc dấu phẩy):
+          </label>
+          <textarea id="textarea-fast-paste" class="fast-paste-textarea" placeholder="biodiversity | /ˌbaɪ.əʊ.daɪˈvɜː.sə.ti/ | noun | sự đa dạng sinh học | Conservation protects biodiversity. | Bảo tồn bảo vệ đa dạng sinh học. | IELTS Environment
+sustainable | /səˈsteɪ.nə.bəl/ | adjective | bền vững | We need sustainable energy. | Chúng ta cần năng lượng bền vững. | Writing Task 2"></textarea>
+          <span class="form-help">Định dạng chuẩn: <code>word | IPA | loại từ | nghĩa VI | ví dụ EN | nghĩa VD VI | ghi chú</code></span>
+        </div>
+
+        <!-- Preview Table Paste -->
+        <div id="preview-table-paste-container" class="hidden">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; margin-bottom: 0.4rem;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-secondary);">BẢNG XEM TRƯỚC TRÍCH XUẤT:</span>
+            <span id="paste-valid-count-text" style="font-size: 0.82rem; color: var(--accent-emerald); font-weight: 700;">0 thẻ hợp lệ</span>
+          </div>
+          <div class="preview-table-container">
+            <table class="preview-table">
+              <thead>
+                <tr>
+                  <th>Từ vựng</th>
+                  <th>Phiên âm</th>
+                  <th>Loại từ</th>
+                  <th>Nghĩa tiếng Việt</th>
+                  <th>Ví dụ</th>
+                </tr>
+              </thead>
+              <tbody id="preview-table-paste-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="result-banner-paste" class="import-result-banner"></div>
+
+        <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+          <button type="button" class="btn btn-primary" id="btn-submit-paste-import" disabled>Nhập hàng loạt thẻ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. VIEW CARDS MODAL -->
+<div class="modal-backdrop" id="modal-view-cards" aria-hidden="true">
+  <div class="modal-card" style="max-width: 760px; width: 95%;">
+    <div class="modal-header">
+      <h3 class="modal-title">Danh sách thẻ: <span id="view-cards-group-title" style="color: #a5b4fc;"></span></h3>
+      <button type="button" class="btn-close-modal" id="btn-close-view-cards" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body" id="view-cards-container" style="max-height: 65vh; overflow-y: auto;">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- 10. SHARE DECK MODAL (SPRINT 8: TASK F18 - §13) -->
+<div class="modal-backdrop" id="modal-share-deck" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Chia sẻ bộ thẻ công khai</h3>
+      <button type="button" class="btn-close-modal" id="btn-close-share-modal" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.9rem;">
+        Bộ thẻ: <strong id="share-deck-title-text" style="color: var(--text-main);"></strong>
+      </p>
+      <div class="form-group">
+        <label for="input-share-url" class="form-label">Đường dẫn chia sẻ (Công khai):</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="input-share-url" class="form-input" readonly style="font-family: var(--font-mono); font-size: 0.85rem;">
+          <button type="button" class="btn btn-primary" id="btn-copy-share-url">Sao chép</button>
+        </div>
+        <span class="form-help" style="margin-top: 0.5rem; display: block;">
+          Bất kỳ ai có liên kết này đều có thể xem trước từ vựng và lưu bản sao về tài khoản của họ.
+        </span>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content: space-between;">
+      <button type="button" class="btn btn-secondary" id="btn-open-shared-page">Xem trang chia sẻ</button>
+      <button type="button" class="btn btn-ghost" id="btn-close-share-modal-footer">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATIONS -->
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+<!-- Scripts -->
+<script type="module" src="js/antigravity.js"></script>
+<script type="module" src="js/api.js"></script>
+<script type="module" src="js/flashcard.js"></script>
+<script type="module" src="js/quiz.js"></script>
+<script type="module" src="js/matching.js"></script>
+<script type="module" src="js/typing.js"></script>
+<script type="module" src="js/listening.js"></script>
+<script type="module" src="js/cloze.js"></script>
+<script type="module" src="js/mixed.js"></script>
+<script type="module" src="js/mydecks.js"></script>
+<script type="module" src="js/deckdetail.js"></script>
+<script type="module" src="js/import.js"></script>
+<script type="module" src="js/shared.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
