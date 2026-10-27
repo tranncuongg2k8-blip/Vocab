@@ -26,10 +26,11 @@ export const WORD_TYPES = [
 ];
 
 export class DeckDetailController {
-  constructor({ onToast, onBackToMyDecks, onStudyDeck, onOpenImportModal, onShareDeck }) {
+  constructor({ onToast, onBackToMyDecks, onStudyDeck, onStudyGroup, onOpenImportModal, onShareDeck }) {
     this.onToast = onToast || console.log;
     this.onBackToMyDecks = onBackToMyDecks || (() => {});
     this.onStudyDeck = onStudyDeck || (() => {});
+    this.onStudyGroup = onStudyGroup || null;
     this.onOpenImportModal = onOpenImportModal || (() => {});
     this.onShareDeck = onShareDeck || (() => {});
 
@@ -391,7 +392,7 @@ export class DeckDetailController {
   }
 
   /**
-   * Render Groups Grid
+   * Render Groups Grid (Học từng thư mục con thay vì học toàn bộ thư mục mẹ)
    */
   renderGroups() {
     if (!this.groupsContainer) return;
@@ -410,6 +411,12 @@ export class DeckDetailController {
 
         <div class="group-card-actions">
           <div class="group-main-btns">
+            <button type="button" class="btn btn-primary btn-sm btn-action-study-group" title="Học ngay nhóm thẻ ${this.escapeHtml(group.title)}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Học ngay
+            </button>
             <button type="button" class="btn btn-secondary btn-sm btn-action-view-cards" title="Xem danh sách thẻ trong nhóm">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -417,7 +424,7 @@ export class DeckDetailController {
               </svg>
               Xem Thẻ
             </button>
-            <button type="button" class="btn btn-primary btn-sm btn-action-add-card" title="Tạo thẻ mới cho nhóm này">
+            <button type="button" class="btn btn-secondary btn-sm btn-action-add-card" title="Tạo thẻ mới cho nhóm này">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -443,6 +450,13 @@ export class DeckDetailController {
       `;
 
       // Event bindings
+      const btnStudyGroup = card.querySelector('.btn-action-study-group');
+      if (btnStudyGroup) {
+        btnStudyGroup.addEventListener('click', () => {
+          this.handleStudyGroup(group);
+        });
+      }
+
       card.querySelector('.btn-action-view-cards').addEventListener('click', () => {
         this.openViewCardsModal(group);
       });
@@ -461,6 +475,49 @@ export class DeckDetailController {
 
       this.groupsContainer.appendChild(card);
     });
+  }
+
+  /**
+   * Bắt đầu phiên học riêng cho nhóm thẻ từ vựng con
+   */
+  async handleStudyGroup(group) {
+    if (!group) return;
+
+    try {
+      const deckId = group.deckId || (this.activeDeck ? this.activeDeck.id : null);
+      if (!deckId) return;
+
+      const res = await api.getCards(deckId, 1000);
+      const allCards = res.cards || [];
+      const groupCards = allCards.filter(c => c.groupId === group.id);
+
+      if (groupCards.length === 0) {
+        this.onToast(`Nhóm "${group.title}" chưa có thẻ từ vựng nào để học. Vui lòng thêm thẻ vào nhóm trước!`);
+        return;
+      }
+
+      const deckTitle = this.activeDeck ? this.activeDeck.title : 'Bộ thẻ';
+      const studyPayload = {
+        id: deckId,
+        deckId: deckId,
+        groupId: group.id,
+        isGroup: true,
+        title: `${deckTitle} • ${group.title}`,
+        groupTitle: group.title,
+        deckTitle: deckTitle,
+        language: (this.activeDeck && this.activeDeck.language) ? this.activeDeck.language : 'en-vi',
+        cards: groupCards
+      };
+
+      if (typeof this.onStudyGroup === 'function') {
+        this.onStudyGroup({ group, deck: this.activeDeck, cards: groupCards, payload: studyPayload });
+      } else if (typeof this.onStudyDeck === 'function') {
+        this.onStudyDeck(studyPayload);
+      }
+    } catch (err) {
+      console.error('Lỗi khi chuẩn bị học nhóm thẻ:', err);
+      this.onToast(`Không thể tải thẻ của nhóm: ${err.message}`);
+    }
   }
 
   // --------------------------------------------------------
@@ -730,6 +787,15 @@ export class DeckDetailController {
       }
 
       this.viewCardsContainer.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 0.75rem;">
+          <span style="font-size: 0.85rem; color: var(--text-secondary);">Tổng cộng: <strong style="color: var(--text-main);">${cardsInGroup.length}</strong> thẻ từ vựng</span>
+          <button type="button" class="btn btn-primary btn-sm btn-modal-study-group" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.85rem; font-weight: 700;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Học ngay nhóm này
+          </button>
+        </div>
         <div class="preview-table-container">
           <table class="preview-table">
             <thead>
@@ -755,6 +821,14 @@ export class DeckDetailController {
           </table>
         </div>
       `;
+
+      const btnModalStudy = this.viewCardsContainer.querySelector('.btn-modal-study-group');
+      if (btnModalStudy) {
+        btnModalStudy.addEventListener('click', () => {
+          this.closeViewCardsModal();
+          this.handleStudyGroup(group);
+        });
+      }
     }).catch(err => {
       this.viewCardsContainer.innerHTML = `
         <p style="color: var(--accent-rose); padding: 1rem;">Lỗi tải thẻ: ${err.message}</p>

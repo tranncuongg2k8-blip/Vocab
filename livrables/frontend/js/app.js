@@ -104,6 +104,10 @@ class VocabApp {
         this.lastListView = 'deck-detail';
         this.startStudy(deck);
       },
+      onStudyGroup: ({ group, deck, cards, payload }) => {
+        this.lastListView = 'deck-detail';
+        this.startStudy(payload);
+      },
       onOpenImportModal: (data) => {
         this.importModalCtrl.openModal(data);
       },
@@ -359,7 +363,7 @@ class VocabApp {
     if (this.btnModalBackSets) {
       this.btnModalBackSets.addEventListener('click', () => {
         this.closeModal(this.completionModal);
-        this.switchView('sets');
+        this.switchView(this.lastListView || 'sets');
       });
     }
 
@@ -617,15 +621,42 @@ class VocabApp {
     // 5. Khởi tạo dữ liệu cho sub-mode được chọn
     if (subMode === 'flashcard') {
       if (this.activeSet) {
-        this.loadProgressStats(this.activeSet.id);
+        if (this.activeSet.isGroup) {
+          this.updateLocalStats(this.flashcardCtrl.cards.length);
+        } else {
+          this.loadProgressStats(this.activeSet.id);
+        }
       }
     } else if (subMode === 'quiz') {
       if (this.activeSet) {
-        this.quizCtrl.loadQuiz(this.activeSet.id, null, this.flashcardCtrl.cards);
+        if (this.activeSet.isGroup) {
+          if (this.flashcardCtrl.cards && this.flashcardCtrl.cards.length >= 2) {
+            this.quizCtrl.setId = this.activeSet.id;
+            this.quizCtrl.fallbackCards = this.flashcardCtrl.cards;
+            this.quizCtrl.questions = this.quizCtrl.generateFallbackQuiz(this.flashcardCtrl.cards);
+            this.quizCtrl.startQuizSession();
+          } else {
+            this.quizCtrl.showState('empty');
+          }
+        } else {
+          this.quizCtrl.loadQuiz(this.activeSet.id, null, this.flashcardCtrl.cards);
+        }
       }
     } else if (subMode === 'matching') {
       if (this.activeSet) {
-        this.matchingCtrl.loadMatching(this.activeSet.id, 6, this.flashcardCtrl.cards);
+        if (this.activeSet.isGroup) {
+          if (this.flashcardCtrl.cards && this.flashcardCtrl.cards.length >= 2) {
+            this.matchingCtrl.setId = this.activeSet.id;
+            this.matchingCtrl.fallbackCards = this.flashcardCtrl.cards;
+            this.matchingCtrl.stopTimer();
+            this.matchingCtrl.pairs = this.matchingCtrl.generateFallbackPairs(this.flashcardCtrl.cards, 6);
+            this.matchingCtrl.startBoard();
+          } else {
+            this.matchingCtrl.showState('empty');
+          }
+        } else {
+          this.matchingCtrl.loadMatching(this.activeSet.id, 6, this.flashcardCtrl.cards);
+        }
       }
     } else if (subMode === 'typing') {
       if (this.activeSet) {
@@ -746,6 +777,20 @@ class VocabApp {
     this.activeSet = set;
     this.switchView('study');
 
+    // Update back button text if in deck detail view or my decks view
+    if (this.btnBackToSets) {
+      const span = this.btnBackToSets.querySelector('span');
+      if (span) {
+        if (this.lastListView === 'deck-detail') {
+          span.textContent = 'Quay lại nhóm thẻ';
+        } else if (this.lastListView === 'my-decks') {
+          span.textContent = 'Quay lại Bộ thẻ của tôi';
+        } else {
+          span.textContent = 'Quay lại danh sách';
+        }
+      }
+    }
+
     // Default to flashcard sub-mode
     this.switchStudySubMode('flashcard');
 
@@ -777,7 +822,7 @@ class VocabApp {
     }
 
     try {
-      // 1. Fetch cards for this set (or use preloaded cards if provided from shared deck)
+      // 1. Fetch cards for this set (or use preloaded cards if provided from group / shared deck)
       let cards = set.cards;
       if (!cards || cards.length === 0) {
         const res = await api.getCards(set.id);
@@ -800,8 +845,12 @@ class VocabApp {
         this.learningModesBar.classList.remove('hidden');
       }
 
-      // 2. Fetch progress stats from GET /progress/:setId
-      await this.loadProgressStats(set.id, cards.length);
+      // 2. Fetch progress stats from GET /progress/:setId (hoặc tính local nếu học theo nhóm)
+      if (set.isGroup) {
+        this.updateLocalStats(cards.length);
+      } else {
+        await this.loadProgressStats(set.id, cards.length);
+      }
 
       // 3. Load cards into controller
       this.flashcardCtrl.loadCards(cards, set);
@@ -873,7 +922,11 @@ class VocabApp {
   async handleCardRating({ cardId, setId, level }) {
     try {
       await api.saveProgress({ cardId, setId, level });
-      await this.loadProgressStats(setId);
+      if (this.activeSet && this.activeSet.isGroup) {
+        this.updateLocalStats(this.flashcardCtrl.cards.length);
+      } else {
+        await this.loadProgressStats(setId);
+      }
     } catch (err) {
       console.warn('POST /progress warning:', err.message);
       this.updateLocalStats();
@@ -886,7 +939,11 @@ class VocabApp {
   // ----------------------------------------------------
   showCompletionModal(data) {
     if (this.completionText) {
-      this.completionText.textContent = `Bạn đã hoàn thành toàn bộ ${data.total} thẻ trong bộ từ vựng "${data.set?.title || ''}".`;
+      const targetName = data.set?.isGroup ? `nhóm từ "${data.set?.groupTitle || data.set?.title || ''}"` : `bộ từ vựng "${data.set?.title || ''}"`;
+      this.completionText.textContent = `Bạn đã hoàn thành toàn bộ ${data.total} thẻ trong ${targetName}.`;
+    }
+    if (this.btnModalBackSets) {
+      this.btnModalBackSets.textContent = (this.lastListView === 'deck-detail' ? 'Quay lại nhóm thẻ' : 'Về danh sách bộ từ');
     }
     if (this.compStatTotal) {
       this.compStatTotal.textContent = String(data.total);

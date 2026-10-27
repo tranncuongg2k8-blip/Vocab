@@ -256,6 +256,18 @@ Giao diện học từ vựng IELTS dạng Flashcard 3D và Quiz trắc nghiệm
   - **Đổi các nhánh mã lỗi `QUOTA_EXCEEDED` thành lỗi chung:** Chuyển đổi toàn bộ các khối `catch` trong `mydecks.js`, `deckdetail.js` và `import.js` về chuẩn thông báo lỗi chung `${err.message}`, loại bỏ hoàn toàn các chuỗi text đặc biệt còn nhắc tới "giới hạn".
   - **Kiểm thử cú pháp sạch 100%:** Kiểm tra toàn bộ codebase bằng `node --check` không phát sinh bất kỳ cảnh báo hoặc lỗi cú pháp nào.
 
+### Tính năng nâng cao: Học từ vựng theo từng Nhóm thẻ con (Group / Subfolder Study)
+- **Chuyển nút "Học ngay" từ Header bộ thẻ mẹ về từng Nhóm thẻ con:**
+  - Loại bỏ nút "Học ngay" toàn bộ bộ thẻ ở header trang chi tiết bộ thẻ (`#view-deck-detail`) nhằm tối ưu trải nghiệm học theo từng chuyên đề/thư mục con cụ thể thay vì nhồi nhét toàn bộ thư mục mẹ.
+  - Tích hợp nút **"Học ngay"** (`.btn-action-study-group`) với giao diện gradient nổi bật trực tiếp trên từng thẻ nhóm (`.group-card`).
+  - Bổ sung nút tiện ích **"Học ngay nhóm này"** (`.btn-modal-study-group`) ngay trong modal Xem danh sách thẻ của từng nhóm.
+- **Cách ly phiên học theo từng nhóm:**
+  - Lọc thẻ chính xác theo `card.groupId === group.id`. Nhóm chưa có thẻ từ vựng sẽ hiển thị thông báo toast nhắc nhở thân thiện và dừng phiên một cách an toàn.
+  - Hiển thị tiêu đề kết hợp đẹp mắt `${deckTitle} • ${groupTitle}` trên tiêu đề phiên học.
+  - Nút quay lại (`#btn-back-to-sets` và nút tại modal chúc mừng hoàn thành) tự động chuyển thành *"Quay lại nhóm thẻ"* và điều hướng thẳng về lại lưới nhóm của bộ thẻ (`deck-detail`).
+  - Hỗ trợ toàn diện cả 7 chế độ học (Lật thẻ 3D, Trắc nghiệm, Ghép thẻ, Gõ từ, Nghe–Viết, Điền từ, Tổng hợp) tự động vận hành trên tập thẻ của nhóm con. Chế độ Trắc nghiệm (Quiz) và Ghép thẻ (Matching) tự sinh câu hỏi/cặp ghép trực tiếp từ thẻ của nhóm.
+  - Tiến độ đánh giá thẻ cục bộ (mastered/review/unseen) được tính toán chính xác theo quy mô nhóm thẻ mà không bị thống kê của bộ thẻ mẹ ghi đè.
+
 ---
 
 ## 2. Hướng dẫn khởi chạy
