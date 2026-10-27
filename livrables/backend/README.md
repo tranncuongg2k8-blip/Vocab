@@ -59,17 +59,17 @@ Health trả `status: ok`, danh sách có 3 sets, truy vấn cards trả 2 thẻ
 ## Deploy một service lên Fly.io
 
 Docker build context là thư mục gốc repo vì Dockerfile copy cả backend và frontend.
-Trong `livrables/backend/fly.toml`, đổi `app` thành tên app duy nhất trên Fly.
+Mẫu này dùng app `vocab-diamond`; đổi tên nếu app đó đã được người khác đăng ký.
 Sau khi cài `flyctl` và đăng nhập bằng `fly auth login`, tại thư mục gốc repo chạy:
 
 ```powershell
 fly launch --config livrables/backend/fly.toml --no-deploy
-fly volumes create vocab_data --region sin --size 1 --app your-unique-app-name
-fly scale count 1 --app your-unique-app-name
-fly deploy --config livrables/backend/fly.toml --app your-unique-app-name
+fly volumes create vocab_data --region sin --size 1 --app vocab-diamond
+fly scale count 1 --app vocab-diamond
+fly deploy --config livrables/backend/fly.toml --app vocab-diamond
 ```
 
-Thay `your-unique-app-name` bằng cùng tên đã ghi trong `fly.toml`.
+Nếu đổi tên app, dùng cùng tên ở cả `fly.toml` và các lệnh trên.
 
 `fly.toml` đặt app ở region `sin`, HTTP port 8080, `SQLITE_PATH=/data/vocab.sqlite`
 và mount volume `vocab_data` tại `/data`. Dùng một Machine vì SQLite nằm trên volume

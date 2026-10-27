@@ -1,8 +1,8 @@
-app = "replace-with-your-unique-app-name"
+app = "vocab-diamond"
 primary_region = "sin"
 
 [build]
-  dockerfile = "livrables/backend/Dockerfile"
+  dockerfile = "Dockerfile"
 
 [env]
   PORT = "8080"
