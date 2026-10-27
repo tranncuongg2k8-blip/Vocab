@@ -5,7 +5,7 @@
  * ========================================================
  */
 
-import { api } from './api.js';
+import { api, DEFAULT_API_BASE_URL } from './api.js';
 import { FlashcardController } from './flashcard.js';
 import { QuizController } from './quiz.js';
 import { MatchingController } from './matching.js';
@@ -242,6 +242,9 @@ class VocabApp {
     this.btnOpenSettings = document.getElementById('btn-open-settings');
     this.btnCloseSettings = document.getElementById('btn-close-settings');
     this.inputApiUrl = document.getElementById('input-api-url');
+    if (this.inputApiUrl) {
+      this.inputApiUrl.value = api.getBaseUrl();
+    }
     this.btnTestApi = document.getElementById('btn-test-api');
     this.btnSaveSettings = document.getElementById('btn-save-settings');
     this.settingsDebugStatus = document.getElementById('settings-debug-status');
@@ -375,10 +378,10 @@ class VocabApp {
       this.btnCloseShortcuts.addEventListener('click', () => this.closeModal(this.shortcutsModal));
     }
 
-    // Settings modal
+    // Settings modal (Task F25: Giữ ô settings chỉnh tay, hỗ trợ reset về mặc định)
     if (this.btnOpenSettings) {
       this.btnOpenSettings.addEventListener('click', () => {
-        this.inputApiUrl.value = api.getBaseUrl();
+        if (this.inputApiUrl) this.inputApiUrl.value = api.getBaseUrl();
         this.testApiConnection();
         this.openModal(this.settingsModal);
       });
@@ -387,11 +390,21 @@ class VocabApp {
       this.btnCloseSettings.addEventListener('click', () => this.closeModal(this.settingsModal));
     }
     if (this.btnTestApi) {
-      this.btnTestApi.addEventListener('click', () => this.testApiConnection(this.inputApiUrl.value));
+      this.btnTestApi.addEventListener('click', () => this.testApiConnection(this.inputApiUrl?.value));
     }
     if (this.btnSaveSettings) {
       this.btnSaveSettings.addEventListener('click', () => {
-        api.setBaseUrl(this.inputApiUrl.value.trim());
+        const customUrl = this.inputApiUrl?.value?.trim();
+        if (customUrl) {
+          api.setBaseUrl(customUrl);
+        } else {
+          // Khi người dùng xóa trống: reset về DEFAULT_API_BASE_URL tự động
+          api.setBaseUrl(DEFAULT_API_BASE_URL);
+          if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('vocab_api_base_url');
+          }
+          if (this.inputApiUrl) this.inputApiUrl.value = api.getBaseUrl();
+        }
         this.closeModal(this.settingsModal);
         this.showToast('Đã lưu cấu hình API Base URL!');
         this.checkApiHealth();

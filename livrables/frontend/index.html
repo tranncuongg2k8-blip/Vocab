@@ -2012,8 +2012,8 @@
     <div class="modal-body">
       <div class="form-group">
         <label for="input-api-url" class="form-label">API Base URL (Theo API Contract):</label>
-        <input type="text" id="input-api-url" class="form-input" value="http://localhost:8000/api/v1">
-        <span class="form-help">Mặc định: <code>http://localhost:8000/api/v1</code> (CORS: <code>http://localhost:3000</code>).</span>
+        <input type="text" id="input-api-url" class="form-input" placeholder="http://localhost:8000/api/v1 hoặc /api/v1">
+        <span class="form-help">Mặc định: Tự động nhận cùng origin (<code>/api/v1</code>) khi host khác localhost, hoặc <code>http://localhost:8000/api/v1</code> khi dev local. Bạn có thể chỉnh sửa thủ công tại đây.</span>
       </div>
 
       <div class="api-debug-box">

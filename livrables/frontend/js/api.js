@@ -5,17 +5,47 @@
  * ========================================================
  */
 
-const DEFAULT_API_BASE_URL = 'http://localhost:8000/api/v1';
+/**
+ * SPRINT 15 (TASK F25): Tự động nhận diện API Base URL
+ * - Khi host khác localhost (Fly.io, production, domain tùy chỉnh): tự nhận cùng origin (/api/v1)
+ * - Khi dev local (localhost / 127.0.0.1 / [::1]): giữ http://localhost:8000/api/v1
+ * - Hỗ trợ tùy chỉnh thủ công qua ô Cài đặt (Settings) và lưu trong localStorage
+ */
+export function resolveDefaultApiBaseUrl() {
+  if (typeof window !== 'undefined' && window.location) {
+    const hostname = window.location.hostname;
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
+    if (!isLocalhost && hostname) {
+      return '/api/v1';
+    }
+  }
+  return 'http://localhost:8000/api/v1';
+}
+
+export const DEFAULT_API_BASE_URL = resolveDefaultApiBaseUrl();
 
 class ApiClient {
   constructor() {
-    this.baseUrl = localStorage.getItem('vocab_api_base_url') || DEFAULT_API_BASE_URL;
+    const defaultUrl = resolveDefaultApiBaseUrl();
+    const saved = (typeof localStorage !== 'undefined') ? localStorage.getItem('vocab_api_base_url') : null;
+
+    // Nếu host không phải localhost nhưng cấu hình lưu cũ lại trỏ vào localhost:8000 (do copy cache), ưu tiên defaultUrl cùng origin
+    const isLocalhost = typeof window !== 'undefined' && window.location &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '[::1]');
+
+    if (saved && !isLocalhost && saved.includes('localhost:8000')) {
+      this.baseUrl = defaultUrl;
+    } else {
+      this.baseUrl = saved || defaultUrl;
+    }
   }
 
   setBaseUrl(url) {
     if (!url) return;
-    this.baseUrl = url.replace(/\/+$/, '');
-    localStorage.setItem('vocab_api_base_url', this.baseUrl);
+    this.baseUrl = url.trim().replace(/\/+$/, '');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('vocab_api_base_url', this.baseUrl);
+    }
   }
 
   getBaseUrl() {

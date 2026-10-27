@@ -318,6 +318,15 @@ Giao diện học từ vựng IELTS dạng Flashcard 3D và Quiz trắc nghiệm
   - Phông chữ hình học thân thiện: `'Plus Jakarta Sans'`, `'Be Vietnam Pro'`, `'Quicksand'`, số liệu Hero Metric kích thước lớn (`44px - 56px`).
 - Bảo toàn 100% logic nghiệp vụ, API Contract và các DOM IDs của toàn bộ hệ thống.
 
+### Sprint 15: Tự động nhận diện API Base URL (Task F25)
+- **Tự động nhận diện theo môi trường (`resolveDefaultApiBaseUrl()`):**
+  - **Khi host khác localhost (Fly.io, custom domain, production):** `DEFAULT_API_BASE_URL` tự động nhận cùng origin (`/api/v1`), giúp frontend gọi trực tiếp backend được phục vụ trên cùng một dịch vụ hoặc reverse proxy mà không cần cấu hình thêm.
+  - **Khi dev local (`localhost`, `127.0.0.1`, `[::1]`):** Giữ nguyên `http://localhost:8000/api/v1` để kết nối thông suốt từ dev server frontend (port 3000) sang backend server (port 8000).
+- **Giữ ô Settings chỉnh tay:**
+  - Hộp thoại Cài đặt (`#settings-modal`, `#input-api-url`) luôn hiển thị URL đang hoạt động, cho phép người dùng hoặc nhà phát triển nhập URL tùy chỉnh thủ công và lưu vào `localStorage` (`vocab_api_base_url`).
+  - Hỗ trợ nút xóa trống để tự động reset về `DEFAULT_API_BASE_URL` tương ứng của môi trường hiện tại.
+  - Tự động fallback về `/api/v1` nếu phát hiện cache cũ `localhost:8000` bị lưu trên môi trường host khác localhost.
+
 ---
 
 ## 2. Hướng dẫn khởi chạy
