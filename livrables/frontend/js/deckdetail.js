@@ -7,6 +7,7 @@
  */
 
 import { api } from './api.js';
+import { searchDictionary, lookupOnlineWord } from './dictionary.js';
 
 export const WORD_TYPES = [
   { key: 'noun', label: 'Danh từ (n)' },
@@ -100,6 +101,9 @@ export class DeckDetailController {
     this.modalCardForm = document.getElementById('modal-card-form');
     this.cardFormGroupTitle = document.getElementById('card-form-group-title');
     this.inputCardSearch = document.getElementById('input-card-search');
+    this.cardSearchSuggestions = document.getElementById('card-search-suggestions');
+    this.btnClearCardSearch = document.getElementById('btn-clear-card-search');
+    this.cardSearchSpinner = document.getElementById('card-search-spinner');
     this.inputCardFront = document.getElementById('input-card-front');
     this.inputCardMeaning = document.getElementById('input-card-meaning');
     this.inputCardPhonetic = document.getElementById('input-card-phonetic');
@@ -111,6 +115,11 @@ export class DeckDetailController {
     this.btnSaveCard = document.getElementById('btn-save-card');
     this.btnCloseCardForm = document.getElementById('btn-close-card-form');
     this.btnCancelCardForm = document.getElementById('btn-cancel-card-form');
+
+    // Autocomplete search state
+    this.currentSuggestions = [];
+    this.selectedSuggestionIndex = -1;
+    this.searchDebounceTimer = null;
 
     // Validation messages
     this.errorCardFront = document.getElementById('error-card-front');
@@ -225,8 +234,30 @@ export class DeckDetailController {
     }
 
     if (this.inputCardSearch) {
-      this.inputCardSearch.addEventListener('input', (e) => this.handleQuickSearch(e.target.value));
+      this.inputCardSearch.addEventListener('input', (e) => this.handleQuickSearchInput(e.target.value));
+      this.inputCardSearch.addEventListener('keydown', (e) => this.handleQuickSearchKeydown(e));
+      this.inputCardSearch.addEventListener('focus', () => {
+        const val = this.inputCardSearch.value.trim();
+        if (val) this.handleQuickSearchInput(val);
+      });
     }
+
+    if (this.btnClearCardSearch) {
+      this.btnClearCardSearch.addEventListener('click', () => this.clearQuickSearch());
+    }
+
+    // Đóng dropdown gợi ý khi click ra ngoài
+    document.addEventListener('click', (e) => {
+      if (!this.modalCardForm || !this.modalCardForm.classList.contains('active')) return;
+      if (this.cardSearchSuggestions && !this.cardSearchSuggestions.classList.contains('hidden')) {
+        const isInside = (this.inputCardSearch && this.inputCardSearch.contains(e.target)) ||
+                         (this.cardSearchSuggestions && this.cardSearchSuggestions.contains(e.target)) ||
+                         (this.btnClearCardSearch && this.btnClearCardSearch.contains(e.target));
+        if (!isInside) {
+          this.hideSuggestions();
+        }
+      }
+    });
 
     if (this.btnSaveCard) {
       this.btnSaveCard.addEventListener('click', () => this.handleSaveCard(false));
@@ -643,11 +674,20 @@ export class DeckDetailController {
 
   closeCardForm() {
     this.selectedGroupId = null;
+    this.hideSuggestions();
+    if (this.searchDebounceTimer) clearTimeout(this.searchDebounceTimer);
     if (this.modalCardForm) this.modalCardForm.classList.remove('active');
   }
 
   resetCardForm() {
     if (this.inputCardSearch) this.inputCardSearch.value = '';
+    if (this.btnClearCardSearch) this.btnClearCardSearch.classList.add('hidden');
+    if (this.cardSearchSpinner) this.cardSearchSpinner.classList.add('hidden');
+    this.hideSuggestions();
+    if (this.searchDebounceTimer) clearTimeout(this.searchDebounceTimer);
+    this.currentSuggestions = [];
+    this.selectedSuggestionIndex = -1;
+
     if (this.inputCardFront) this.inputCardFront.value = '';
     if (this.inputCardMeaning) this.inputCardMeaning.value = '';
     if (this.inputCardPhonetic) this.inputCardPhonetic.value = '';
@@ -667,29 +707,355 @@ export class DeckDetailController {
     if (this.inputCardMeaning) this.inputCardMeaning.classList.remove('input-has-error');
   }
 
-  handleQuickSearch(val) {
-    const query = (val || '').trim().toLowerCase();
-    if (!query) return;
-
-    // Quick auto-fill helper for common IELTS words
-    const commonIelts = {
-      'sustainable': { meaning: 'bền vững', phonetic: '/səˈsteɪ.nə.bəl/', type: 'adjective', ex: 'We need sustainable solutions.', exVi: 'Chúng ta cần các giải pháp bền vững.' },
-      'innovation': { meaning: 'sự đổi mới sáng tạo', phonetic: '/ˌɪn.əˈveɪ.ʃən/', type: 'noun', ex: 'Technological innovation drives growth.', exVi: 'Đổi mới công nghệ thúc đẩy tăng trưởng.' },
-      'biodiversity': { meaning: 'đa dạng sinh học', phonetic: '/ˌbaɪ.əʊ.daɪˈvɜː.sə.ti/', type: 'noun', ex: 'Preserve biodiversity in rainforests.', exVi: 'Bảo tồn đa dạng sinh học trong rừng mưa nhiệt đới.' },
-      'comprehensive': { meaning: 'toàn diện, bao quát', phonetic: '/ˌkɒm.prɪˈhen.sɪv/', type: 'adjective', ex: 'A comprehensive study was conducted.', exVi: 'Một nghiên cứu toàn diện đã được tiến hành.' },
-      'mitigate': { meaning: 'giảm nhẹ, xoa dịu', phonetic: '/ˈmɪt.ɪ.ɡeɪt/', type: 'verb', ex: 'Measures to mitigate climate change.', exVi: 'Các biện pháp để giảm nhẹ biến đổi khí hậu.' }
-    };
-
-    if (commonIelts[query]) {
-      const item = commonIelts[query];
-      if (this.inputCardFront) this.inputCardFront.value = query;
-      if (this.inputCardMeaning) this.inputCardMeaning.value = item.meaning;
-      if (this.inputCardPhonetic) this.inputCardPhonetic.value = item.phonetic;
-      if (this.inputCardExample) this.inputCardExample.value = item.ex;
-      if (this.inputCardExampleVi) this.inputCardExampleVi.value = item.exVi;
-      this.selectedWordType = item.type;
-      this.renderWordTypePicker();
+  /**
+   * Helper: lấy danh sách các thẻ từ các nhóm hiện có để làm giàu nguồn gợi ý
+   */
+  getAllCurrentCards() {
+    const cards = [];
+    if (Array.isArray(this.groups)) {
+      this.groups.forEach(g => {
+        if (Array.isArray(g.cards)) {
+          cards.push(...g.cards);
+        }
+      });
     }
+    return cards;
+  }
+
+  /**
+   * Định dạng Badge loại từ theo chuẩn 13 loại từ IELTS
+   */
+  getTypeBadgeInfo(type) {
+    const t = (type || '').toLowerCase();
+    switch (t) {
+      case 'idiom':
+        return { className: 'type-badge-idiom', label: 'Thành ngữ' };
+      case 'phrasal verb':
+        return { className: 'type-badge-phrasal-verb', label: 'Cụm ĐT' };
+      case 'collocation':
+        return { className: 'type-badge-collocation', label: 'Collocation' };
+      case 'phrase':
+        return { className: 'type-badge-phrase', label: 'Cụm từ' };
+      case 'noun':
+        return { className: 'type-badge-noun', label: 'Danh từ' };
+      case 'verb':
+        return { className: 'type-badge-verb', label: 'Động từ' };
+      case 'adjective':
+        return { className: 'type-badge-adjective', label: 'Tính từ' };
+      case 'adverb':
+        return { className: 'type-badge-adverb', label: 'Trạng từ' };
+      case 'preposition':
+        return { className: 'type-badge-default', label: 'Giới từ' };
+      case 'conjunction':
+        return { className: 'type-badge-default', label: 'Liên từ' };
+      case 'pronoun':
+        return { className: 'type-badge-default', label: 'Đại từ' };
+      case 'determiner':
+        return { className: 'type-badge-default', label: 'Từ hạn định' };
+      case 'interjection':
+        return { className: 'type-badge-default', label: 'Thán từ' };
+      case 'modal verb':
+        return { className: 'type-badge-default', label: 'ĐT khiếm khuyết' };
+      default:
+        return { className: 'type-badge-default', label: type || 'Từ vựng' };
+    }
+  }
+
+  /**
+   * Làm nổi bật phần trùng khớp của từ/cụm từ
+   */
+  highlightMatch(text, query) {
+    if (!text) return '';
+    if (!query) return this.escapeHtml(text);
+
+    const safeText = this.escapeHtml(text);
+    const safeQuery = this.escapeHtml(query);
+    const regex = new RegExp(`(${safeQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return safeText.replace(regex, '<span class="suggestion-match-highlight">$1</span>');
+  }
+
+  /**
+   * Xử lý tìm kiếm gợi ý từ vựng, cụm từ & idiom theo thời gian thực
+   */
+  handleQuickSearchInput(val) {
+    const query = (val || '').trim();
+    if (!query) {
+      this.clearQuickSearch();
+      return;
+    }
+
+    if (this.btnClearCardSearch) {
+      this.btnClearCardSearch.classList.remove('hidden');
+    }
+
+    // 1. Tìm kiếm tức thì trong từ điển nội bộ IELTS (Idioms, Phrasal verbs, Collocations, Academic words)
+    const extraCards = this.getAllCurrentCards();
+    const matches = searchDictionary(query, { limit: 8, extraCards });
+
+    this.currentSuggestions = matches;
+    this.selectedSuggestionIndex = -1;
+
+    // Hiển thị danh sách gợi ý
+    this.renderSuggestions(matches, query);
+
+    // 2. Nếu gõ chính xác 1 từ/idiom sẵn có thì tự động điền ngay form
+    const exactMatch = matches.find(m => m.word.toLowerCase() === query.toLowerCase());
+    if (exactMatch) {
+      this.fillCardFields(exactMatch, false);
+    }
+
+    // 3. Fallback trực tuyến (debounced) đối với các từ hiếm hoặc chưa có trong từ điển mẫu
+    if (this.searchDebounceTimer) clearTimeout(this.searchDebounceTimer);
+
+    if (query.length >= 2) {
+      this.searchDebounceTimer = setTimeout(async () => {
+        // Nếu đã có exact match thì không cần tra cứu mạng
+        if (exactMatch) return;
+
+        if (this.cardSearchSpinner) {
+          this.cardSearchSpinner.classList.remove('hidden');
+        }
+
+        try {
+          const onlineWord = await lookupOnlineWord(query);
+          if (onlineWord && this.inputCardSearch && this.inputCardSearch.value.trim().toLowerCase() === query.toLowerCase()) {
+            // Thêm vào danh sách gợi ý nếu chưa có
+            const alreadyExists = this.currentSuggestions.some(s => s.word.toLowerCase() === onlineWord.word.toLowerCase());
+            if (!alreadyExists) {
+              this.currentSuggestions.push(onlineWord);
+              this.renderSuggestions(this.currentSuggestions, query);
+            }
+          }
+        } catch (_err) {
+          // Bỏ qua lỗi mạng
+        } finally {
+          if (this.cardSearchSpinner) {
+            this.cardSearchSpinner.classList.add('hidden');
+          }
+        }
+      }, 400);
+    }
+  }
+
+  /**
+   * Backward compatibility
+   */
+  handleQuickSearch(val) {
+    this.handleQuickSearchInput(val);
+  }
+
+  /**
+   * Hiển thị danh sách gợi ý trực quan Bento Dropdown
+   */
+  renderSuggestions(items, query) {
+    if (!this.cardSearchSuggestions) return;
+    this.cardSearchSuggestions.innerHTML = '';
+
+    if (!items || items.length === 0) {
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'suggestion-empty';
+      emptyDiv.innerHTML = `Chưa có từ hoặc idiom <strong>"${this.escapeHtml(query)}"</strong> trong kho cục bộ.`;
+
+      const promptDiv = document.createElement('div');
+      promptDiv.className = 'suggestion-online-prompt';
+      promptDiv.setAttribute('role', 'option');
+      promptDiv.innerHTML = `
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Tra cứu định nghĩa trực tuyến cho "<strong>${this.escapeHtml(query)}</strong>" (Nhấn Enter)</span>
+      `;
+      promptDiv.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await this.triggerOnlineLookup(query);
+      });
+
+      this.cardSearchSuggestions.appendChild(emptyDiv);
+      this.cardSearchSuggestions.appendChild(promptDiv);
+      this.cardSearchSuggestions.classList.remove('hidden');
+      return;
+    }
+
+    items.forEach((item, index) => {
+      const el = document.createElement('div');
+      el.className = 'suggestion-item';
+      if (index === this.selectedSuggestionIndex) {
+        el.classList.add('selected');
+      }
+      el.setAttribute('role', 'option');
+      el.setAttribute('data-index', String(index));
+
+      const typeInfo = this.getTypeBadgeInfo(item.type);
+      const highlightedWord = this.highlightMatch(item.word, query);
+
+      el.innerHTML = `
+        <div class="suggestion-header">
+          <div class="suggestion-word-wrap">
+            <span class="suggestion-word">${highlightedWord}</span>
+            ${item.phonetic ? `<span class="suggestion-phonetic">${this.escapeHtml(item.phonetic)}</span>` : ''}
+          </div>
+          <span class="suggestion-type-badge ${typeInfo.className}">${typeInfo.label}</span>
+        </div>
+        <div class="suggestion-meaning">${this.escapeHtml(item.meaning || '')}</div>
+        ${item.example ? `<div class="suggestion-example">“${this.escapeHtml(item.example)}”</div>` : ''}
+      `;
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.selectSuggestion(item);
+      });
+
+      this.cardSearchSuggestions.appendChild(el);
+    });
+
+    this.cardSearchSuggestions.classList.remove('hidden');
+  }
+
+  /**
+   * Tự động điền tất cả các trường trong form tạo thẻ
+   */
+  fillCardFields(item, showFeedbackToast = true) {
+    if (!item) return;
+
+    if (this.inputCardFront) this.inputCardFront.value = item.word || '';
+    if (this.inputCardMeaning) this.inputCardMeaning.value = item.meaning || '';
+    if (this.inputCardPhonetic) this.inputCardPhonetic.value = item.phonetic || '';
+    if (this.inputCardExample) this.inputCardExample.value = item.example || '';
+    if (this.inputCardExampleVi) this.inputCardExampleVi.value = item.exampleVi || '';
+
+    // Cập nhật loại từ và hiển thị nút active trên 13 loại từ IELTS
+    this.selectedWordType = item.type || 'noun';
+    this.renderWordTypePicker();
+
+    this.clearValidationErrors();
+
+    if (showFeedbackToast) {
+      this.onToast(`✔ Đã tự động điền thông tin cho "${item.word}"`);
+    }
+  }
+
+  /**
+   * Chọn một gợi ý từ danh sách
+   */
+  selectSuggestion(item) {
+    if (!item) return;
+    this.fillCardFields(item, true);
+    if (this.inputCardSearch) this.inputCardSearch.value = item.word;
+    this.hideSuggestions();
+  }
+
+  /**
+   * Kích hoạt tra cứu trực tuyến và tự động hoàn thành bảng
+   */
+  async triggerOnlineLookup(query) {
+    if (!query) return;
+    if (this.cardSearchSpinner) this.cardSearchSpinner.classList.remove('hidden');
+
+    try {
+      const onlineWord = await lookupOnlineWord(query);
+      if (onlineWord) {
+        this.selectSuggestion(onlineWord);
+      } else {
+        // Điền trước từ vựng vào front để người dùng dễ điền nghĩa
+        if (this.inputCardFront) this.inputCardFront.value = query;
+        this.hideSuggestions();
+        this.onToast(`Đã điền từ "${query}". Hãy bổ sung thêm bản dịch tiếng Việt nhé!`);
+        this.inputCardMeaning?.focus();
+      }
+    } catch (_err) {
+      if (this.inputCardFront) this.inputCardFront.value = query;
+      this.hideSuggestions();
+      this.inputCardMeaning?.focus();
+    } finally {
+      if (this.cardSearchSpinner) this.cardSearchSpinner.classList.add('hidden');
+    }
+  }
+
+  /**
+   * Điều hướng danh sách gợi ý bằng bàn phím (Mũi tên lên/xuống, Enter, Esc)
+   */
+  handleQuickSearchKeydown(e) {
+    if (!this.cardSearchSuggestions || this.cardSearchSuggestions.classList.contains('hidden')) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = this.inputCardSearch?.value?.trim();
+        if (val) this.handleQuickSearchInput(val);
+      }
+      return;
+    }
+
+    const itemsCount = this.currentSuggestions.length;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (itemsCount > 0) {
+        this.selectedSuggestionIndex = (this.selectedSuggestionIndex + 1) % itemsCount;
+        this.updateSelectedSuggestionHighlight();
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (itemsCount > 0) {
+        this.selectedSuggestionIndex = (this.selectedSuggestionIndex - 1 + itemsCount) % itemsCount;
+        this.updateSelectedSuggestionHighlight();
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (this.selectedSuggestionIndex >= 0 && this.currentSuggestions[this.selectedSuggestionIndex]) {
+        this.selectSuggestion(this.currentSuggestions[this.selectedSuggestionIndex]);
+      } else if (itemsCount > 0) {
+        this.selectSuggestion(this.currentSuggestions[0]);
+      } else {
+        // Tra cứu trực tuyến
+        const q = this.inputCardSearch?.value?.trim();
+        if (q) this.triggerOnlineLookup(q);
+      }
+    } else if (e.key === 'Escape') {
+      this.hideSuggestions();
+    }
+  }
+
+  /**
+   * Cập nhật class .selected khi duyệt phím
+   */
+  updateSelectedSuggestionHighlight() {
+    if (!this.cardSearchSuggestions) return;
+    const items = this.cardSearchSuggestions.querySelectorAll('.suggestion-item');
+    items.forEach((itemEl, idx) => {
+      if (idx === this.selectedSuggestionIndex) {
+        itemEl.classList.add('selected');
+        itemEl.scrollIntoView({ block: 'nearest' });
+      } else {
+        itemEl.classList.remove('selected');
+      }
+    });
+  }
+
+  /**
+   * Ẩn hộp thoại gợi ý
+   */
+  hideSuggestions() {
+    if (this.cardSearchSuggestions) {
+      this.cardSearchSuggestions.classList.add('hidden');
+    }
+    this.selectedSuggestionIndex = -1;
+  }
+
+  /**
+   * Xóa nội dung tìm kiếm
+   */
+  clearQuickSearch() {
+    if (this.inputCardSearch) {
+      this.inputCardSearch.value = '';
+    }
+    if (this.btnClearCardSearch) {
+      this.btnClearCardSearch.classList.add('hidden');
+    }
+    if (this.cardSearchSpinner) {
+      this.cardSearchSpinner.classList.add('hidden');
+    }
+    this.hideSuggestions();
+    this.inputCardSearch?.focus();
   }
 
   async handleSaveCard(continueAdding = false) {

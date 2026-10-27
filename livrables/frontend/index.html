@@ -2172,15 +2172,24 @@
     </div>
     <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
       <!-- Quick Dictionary Search -->
-      <div class="form-group">
-        <label for="input-card-search" class="form-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          Tìm từ vựng nhanh (Gợi ý tự động điền):
+      <div class="form-group card-search-group" style="position: relative;">
+        <label for="input-card-search" class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Tìm từ vựng nhanh (Gợi ý tự động điền):
+          </span>
+          <span class="card-search-badge-hint">Hỗ trợ từ, cụm từ & idiom</span>
         </label>
-        <input type="text" id="input-card-search" class="form-input" placeholder="Gõ thử: sustainable, innovation, biodiversity, mitigate..." autocomplete="off">
+        <div class="card-search-input-wrap">
+          <input type="text" id="input-card-search" class="form-input" placeholder="Nhập từ, cụm từ hoặc idiom (ví dụ: sustainable, piece of cake, look forward to...)" autocomplete="off">
+          <button type="button" id="btn-clear-card-search" class="card-search-clear-btn hidden" title="Xóa tìm kiếm" aria-label="Xóa">✕</button>
+          <div id="card-search-spinner" class="card-search-spinner hidden" title="Đang tìm kiếm..."></div>
+        </div>
+        <!-- Autocomplete Suggestions Dropdown -->
+        <div id="card-search-suggestions" class="card-search-suggestions hidden" role="listbox" aria-label="Danh sách gợi ý từ vựng và idiom"></div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -2456,6 +2465,7 @@ sustainable | /səˈsteɪ.nə.bəl/ | adjective | bền vững | We need sustain
 <script type="module" src="js/cloze.js"></script>
 <script type="module" src="js/mixed.js"></script>
 <script type="module" src="js/mydecks.js"></script>
+<script type="module" src="js/dictionary.js"></script>
 <script type="module" src="js/deckdetail.js"></script>
 <script type="module" src="js/import.js"></script>
 <script type="module" src="js/shared.js"></script>

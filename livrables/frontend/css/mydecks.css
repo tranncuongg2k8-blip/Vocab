@@ -539,6 +539,260 @@
   width: 95%;
 }
 
+/* --- Card Quick Search & Bento Autocomplete Dropdown --- */
+.card-search-group {
+  position: relative;
+}
+
+.card-search-badge-hint {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--bento-royal-blue);
+  background: #EEF4FF;
+  border: 1px solid #C7D9FD;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+.card-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.card-search-input-wrap .form-input {
+  width: 100%;
+  padding-right: 2.5rem;
+  border: 2px solid #E2E8F0;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  transition: all var(--spring-bounce);
+}
+
+.card-search-input-wrap .form-input:focus {
+  border-color: var(--bento-royal-blue);
+  box-shadow: 0 0 0 3px rgba(61, 108, 231, 0.18);
+}
+
+.card-search-clear-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: #E2E8F0;
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-bounce);
+}
+
+.card-search-clear-btn:hover {
+  background: #CBD5E1;
+  color: var(--text-main);
+  transform: scale(1.1);
+}
+
+.card-search-spinner {
+  position: absolute;
+  right: 2.2rem;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #E2E8F0;
+  border-top-color: var(--bento-royal-blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.card-search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  max-height: 290px;
+  overflow-y: auto;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 18px;
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(61, 108, 231, 0.08);
+  z-index: 1000;
+  padding: 0.35rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+}
+
+.card-search-suggestions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.card-search-suggestions::-webkit-scrollbar-thumb {
+  background-color: #CBD5E1;
+  border-radius: 4px;
+}
+
+.suggestion-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.65rem 0.95rem;
+  cursor: pointer;
+  border-bottom: 1px solid #F1F5F9;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover,
+.suggestion-item.selected {
+  background: #F0F5FF;
+  border-left: 4px solid var(--bento-royal-blue);
+  padding-left: 1.15rem;
+}
+
+.suggestion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.suggestion-word-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.suggestion-word {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.suggestion-match-highlight {
+  color: var(--bento-royal-blue);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.suggestion-phonetic {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #64748B;
+}
+
+.suggestion-type-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.12rem 0.45rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+/* Bento Word Type Badges */
+.type-badge-idiom {
+  background: #F3E8FF;
+  color: #7E22CE;
+  border: 1px solid #D8B4FE;
+}
+.type-badge-phrasal-verb {
+  background: #FFEDD5;
+  color: #C2410C;
+  border: 1px solid #FDBA74;
+}
+.type-badge-collocation {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #86EFAC;
+}
+.type-badge-phrase {
+  background: #E0E7FF;
+  color: #4338CA;
+  border: 1px solid #A5B4FC;
+}
+.type-badge-noun {
+  background: #DBEAFE;
+  color: #1D4ED8;
+  border: 1px solid #93C5FD;
+}
+.type-badge-verb {
+  background: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #7DD3FC;
+}
+.type-badge-adjective {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FCD34D;
+}
+.type-badge-adverb {
+  background: #FCE7F3;
+  color: #BE185D;
+  border: 1px solid #F9A8D4;
+}
+.type-badge-default {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+}
+
+.suggestion-meaning {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #334155;
+  line-height: 1.35;
+}
+
+.suggestion-example {
+  font-size: 0.77rem;
+  color: #64748B;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.suggestion-online-prompt {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: #F8FAFC;
+  border-top: 1.5px dashed #E2E8F0;
+  cursor: pointer;
+  color: var(--bento-royal-blue);
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.suggestion-online-prompt:hover,
+.suggestion-online-prompt.selected {
+  background: #EEF4FF;
+  color: #1E40AF;
+}
+
 .word-type-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));

@@ -268,6 +268,31 @@ Giao diện học từ vựng IELTS dạng Flashcard 3D và Quiz trắc nghiệm
   - Hỗ trợ toàn diện cả 7 chế độ học (Lật thẻ 3D, Trắc nghiệm, Ghép thẻ, Gõ từ, Nghe–Viết, Điền từ, Tổng hợp) tự động vận hành trên tập thẻ của nhóm con. Chế độ Trắc nghiệm (Quiz) và Ghép thẻ (Matching) tự sinh câu hỏi/cặp ghép trực tiếp từ thẻ của nhóm.
   - Tiến độ đánh giá thẻ cục bộ (mastered/review/unseen) được tính toán chính xác theo quy mô nhóm thẻ mà không bị thống kê của bộ thẻ mẹ ghi đè.
 
+### Nâng cấp: Công cụ tìm kiếm & Gợi ý tự động điền từ vựng, cụm từ & idiom (Smart Autocomplete Engine)
+- **1. Kho từ điển nội bộ & Cơ chế phân loại:**
+  - Tích hợp module `dictionary.js` chứa hơn 120+ mục từ vựng chọn lọc chất lượng cao bao quát đầy đủ 13 loại từ IELTS (`noun`, `verb`, `adjective`, `adverb`, `preposition`, `pronoun`, `conjunction`, `determiner`, `interjection`, `phrasal verb`, `idiom`, `phrase`, `collocation`, `modal verb`).
+  - Đặc biệt phong phú ở các nhóm:
+    - **Thành ngữ (Idioms):** `piece of cake`, `break a leg`, `bite the bullet`, `burn the midnight oil`, `cost an arm and a leg`, `once in a blue moon`, `under the weather`, `spill the beans`, `hit the nail on the head`, `see eye to eye`, `a blessing in disguise`, v.v.
+    - **Cụm động từ (Phrasal Verbs):** `look forward to`, `carry out`, `bring about`, `come up with`, `figure out`, `give up`, `put off`, `call off`, `turn down`, `break down`, v.v.
+    - **Cụm kết hợp từ & Cụm từ (Collocations & Phrases):** `make a decision`, `bear in mind`, `pay attention to`, `gain momentum`, `reach a consensus`, `bridge the gap`, `in terms of`, `as a matter of fact`, `take into account`, `play a crucial role in`, v.v.
+    - **Từ vựng học thuật IELTS:** `sustainable`, `innovation`, `biodiversity`, `comprehensive`, `mitigate`, `resilience`, `ubiquitous`, `paradigm`, `deteriorate`, `alleviate`, v.v.
+- **2. Tìm kiếm gợi ý thông minh (Smart Real-time Matching):**
+  - Tìm kiếm tức thì theo tiền tố (prefix), ranh giới từ (word boundary bên trong idiom/phrase), chuỗi con và tìm kiếm 2 chiều bằng tiếng Việt không dấu / có dấu.
+  - Tự động tích hợp thêm các thẻ đã có sẵn trong các nhóm của bộ thẻ hiện tại để mở rộng phạm vi gợi ý.
+  - Hỗ trợ fallback tra cứu trực tuyến qua Free Dictionary API đối với các từ hiếm chưa có sẵn trong kho cục bộ.
+- **3. Trải nghiệm người dùng Bento Dropdown & Điều hướng phím:**
+  - Khung dropdown gợi ý nổi phong cách Bento Box: hiển thị từ vựng tiếng Anh (in đậm và highlight chữ trùng khớp), phiên âm IPA (font monospace), badge phân loại từ đa màu sắc, bản dịch tiếng Việt và ví dụ ngữ cảnh thực tế.
+  - Điều hướng bằng bàn phím tiện lợi: phím <kbd>↓</kbd> / <kbd>↑</kbd> để di chuyển, <kbd>Enter</kbd> để chọn, <kbd>Esc</kbd> để đóng. Nút xóa nhanh <kbd>✕</kbd> và icon xoay spinner khi tìm kiếm mạng.
+- **4. Tự động hoàn thành toàn bộ bảng tạo thẻ:**
+  - Khi chọn bất kỳ từ, cụm từ hay thành ngữ nào từ gợi ý (hoặc khi gõ đúng chính xác), hệ thống lập tức tự động điền đầy đủ tất cả các trường:
+    - Từ vựng (Tiếng Anh) (`front`)
+    - Bản dịch / Định nghĩa (Tiếng Việt) (`meaning`/`back`)
+    - Loại từ (tự động chọn và kích hoạt đúng nút trên lưới 13 loại từ IELTS)
+    - Phiên âm IPA (`phonetic`)
+    - Câu ví dụ ngữ cảnh (Tiếng Anh) (`example`)
+    - Bản dịch câu ví dụ (Tiếng Việt) (`exampleVi`)
+  - Tự động xóa lỗi kiểm tra dữ liệu và hiển thị toast thông báo hoàn tất điền thẻ.
+
 ### Nâng cấp giao diện toàn diện: Playful Gamified Bento Grid Design System
 - **1. Cấu trúc & Bố cục (Bento Grid Architecture):**
   - Hệ thống lưới CSS Grid đa cột bất đối xứng nhưng cân bằng (hàng trên tỷ lệ `5fr 3.5fr 3.5fr`, hàng dưới tỷ lệ `3fr 6fr 3fr` trên Desktop, tự động co giãn 1-2 cột trên Tablet/Mobile; khoảng cách `gap: 20px - 24px`).
