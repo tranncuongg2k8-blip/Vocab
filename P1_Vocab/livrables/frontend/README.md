@@ -256,6 +256,68 @@ Giao diện học từ vựng IELTS dạng Flashcard 3D và Quiz trắc nghiệm
   - **Đổi các nhánh mã lỗi `QUOTA_EXCEEDED` thành lỗi chung:** Chuyển đổi toàn bộ các khối `catch` trong `mydecks.js`, `deckdetail.js` và `import.js` về chuẩn thông báo lỗi chung `${err.message}`, loại bỏ hoàn toàn các chuỗi text đặc biệt còn nhắc tới "giới hạn".
   - **Kiểm thử cú pháp sạch 100%:** Kiểm tra toàn bộ codebase bằng `node --check` không phát sinh bất kỳ cảnh báo hoặc lỗi cú pháp nào.
 
+### Tính năng nâng cao: Học từ vựng theo từng Nhóm thẻ con (Group / Subfolder Study)
+- **Chuyển nút "Học ngay" từ Header bộ thẻ mẹ về từng Nhóm thẻ con:**
+  - Loại bỏ nút "Học ngay" toàn bộ bộ thẻ ở header trang chi tiết bộ thẻ (`#view-deck-detail`) nhằm tối ưu trải nghiệm học theo từng chuyên đề/thư mục con cụ thể thay vì nhồi nhét toàn bộ thư mục mẹ.
+  - Tích hợp nút **"Học ngay"** (`.btn-action-study-group`) với giao diện gradient nổi bật trực tiếp trên từng thẻ nhóm (`.group-card`).
+  - Bổ sung nút tiện ích **"Học ngay nhóm này"** (`.btn-modal-study-group`) ngay trong modal Xem danh sách thẻ của từng nhóm.
+- **Cách ly phiên học theo từng nhóm:**
+  - Lọc thẻ chính xác theo `card.groupId === group.id`. Nhóm chưa có thẻ từ vựng sẽ hiển thị thông báo toast nhắc nhở thân thiện và dừng phiên một cách an toàn.
+  - Hiển thị tiêu đề kết hợp đẹp mắt `${deckTitle} • ${groupTitle}` trên tiêu đề phiên học.
+  - Nút quay lại (`#btn-back-to-sets` và nút tại modal chúc mừng hoàn thành) tự động chuyển thành *"Quay lại nhóm thẻ"* và điều hướng thẳng về lại lưới nhóm của bộ thẻ (`deck-detail`).
+  - Hỗ trợ toàn diện cả 7 chế độ học (Lật thẻ 3D, Trắc nghiệm, Ghép thẻ, Gõ từ, Nghe–Viết, Điền từ, Tổng hợp) tự động vận hành trên tập thẻ của nhóm con. Chế độ Trắc nghiệm (Quiz) và Ghép thẻ (Matching) tự sinh câu hỏi/cặp ghép trực tiếp từ thẻ của nhóm.
+  - Tiến độ đánh giá thẻ cục bộ (mastered/review/unseen) được tính toán chính xác theo quy mô nhóm thẻ mà không bị thống kê của bộ thẻ mẹ ghi đè.
+
+### Nâng cấp: Công cụ tìm kiếm & Gợi ý tự động điền từ vựng, cụm từ & idiom (Smart Autocomplete Engine)
+- **1. Kho từ điển nội bộ & Cơ chế phân loại:**
+  - Tích hợp module `dictionary.js` chứa hơn 120+ mục từ vựng chọn lọc chất lượng cao bao quát đầy đủ 13 loại từ IELTS (`noun`, `verb`, `adjective`, `adverb`, `preposition`, `pronoun`, `conjunction`, `determiner`, `interjection`, `phrasal verb`, `idiom`, `phrase`, `collocation`, `modal verb`).
+  - Đặc biệt phong phú ở các nhóm:
+    - **Thành ngữ (Idioms):** `piece of cake`, `break a leg`, `bite the bullet`, `burn the midnight oil`, `cost an arm and a leg`, `once in a blue moon`, `under the weather`, `spill the beans`, `hit the nail on the head`, `see eye to eye`, `a blessing in disguise`, v.v.
+    - **Cụm động từ (Phrasal Verbs):** `look forward to`, `carry out`, `bring about`, `come up with`, `figure out`, `give up`, `put off`, `call off`, `turn down`, `break down`, v.v.
+    - **Cụm kết hợp từ & Cụm từ (Collocations & Phrases):** `make a decision`, `bear in mind`, `pay attention to`, `gain momentum`, `reach a consensus`, `bridge the gap`, `in terms of`, `as a matter of fact`, `take into account`, `play a crucial role in`, v.v.
+    - **Từ vựng học thuật IELTS:** `sustainable`, `innovation`, `biodiversity`, `comprehensive`, `mitigate`, `resilience`, `ubiquitous`, `paradigm`, `deteriorate`, `alleviate`, v.v.
+- **2. Tìm kiếm gợi ý thông minh (Smart Real-time Matching):**
+  - Tìm kiếm tức thì theo tiền tố (prefix), ranh giới từ (word boundary bên trong idiom/phrase), chuỗi con và tìm kiếm 2 chiều bằng tiếng Việt không dấu / có dấu.
+  - Tự động tích hợp thêm các thẻ đã có sẵn trong các nhóm của bộ thẻ hiện tại để mở rộng phạm vi gợi ý.
+  - Hỗ trợ fallback tra cứu trực tuyến qua Free Dictionary API đối với các từ hiếm chưa có sẵn trong kho cục bộ.
+- **3. Trải nghiệm người dùng Bento Dropdown & Điều hướng phím:**
+  - Khung dropdown gợi ý nổi phong cách Bento Box: hiển thị từ vựng tiếng Anh (in đậm và highlight chữ trùng khớp), phiên âm IPA (font monospace), badge phân loại từ đa màu sắc, bản dịch tiếng Việt và ví dụ ngữ cảnh thực tế.
+  - Điều hướng bằng bàn phím tiện lợi: phím <kbd>↓</kbd> / <kbd>↑</kbd> để di chuyển, <kbd>Enter</kbd> để chọn, <kbd>Esc</kbd> để đóng. Nút xóa nhanh <kbd>✕</kbd> và icon xoay spinner khi tìm kiếm mạng.
+- **4. Tự động hoàn thành toàn bộ bảng tạo thẻ:**
+  - Khi chọn bất kỳ từ, cụm từ hay thành ngữ nào từ gợi ý (hoặc khi gõ đúng chính xác), hệ thống lập tức tự động điền đầy đủ tất cả các trường:
+    - Từ vựng (Tiếng Anh) (`front`)
+    - Bản dịch / Định nghĩa (Tiếng Việt) (`meaning`/`back`)
+    - Loại từ (tự động chọn và kích hoạt đúng nút trên lưới 13 loại từ IELTS)
+    - Phiên âm IPA (`phonetic`)
+    - Câu ví dụ ngữ cảnh (Tiếng Anh) (`example`)
+    - Bản dịch câu ví dụ (Tiếng Việt) (`exampleVi`)
+  - Tự động xóa lỗi kiểm tra dữ liệu và hiển thị toast thông báo hoàn tất điền thẻ.
+
+### Nâng cấp giao diện toàn diện: Playful Gamified Bento Grid Design System
+- **1. Cấu trúc & Bố cục (Bento Grid Architecture):**
+  - Hệ thống lưới CSS Grid đa cột bất đối xứng nhưng cân bằng (hàng trên tỷ lệ `5fr 3.5fr 3.5fr`, hàng dưới tỷ lệ `3fr 6fr 3fr` trên Desktop, tự động co giãn 1-2 cột trên Tablet/Mobile; khoảng cách `gap: 20px - 24px`).
+  - **Khối thẻ chính (Primary Cards):** Bo góc lớn (`border-radius: 28px - 32px`), padding rộng rãi (`24px - 32px`), relative positioning hỗ trợ các sticker ghim góc.
+  - **Khối thẻ con bên trong (Inner Sub-cards):** Nền trắng tinh khôi (`#FFFFFF`), bo góc mềm mại (`16px - 20px`), đổ bóng nổi khối nhẹ (`box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08)`).
+  - Áp dụng góc xoay ngẫu nhiên tinh tế (`rotate(-2deg)` đến `rotate(2deg)`) cho các mini-stat card, tự động xoay thẳng lại (`rotate(0deg)`) và nâng nhẹ khi hover.
+- **2. Bảng màu tươi sáng & Sặc sỡ (Vibrant Color Palette):**
+  - **Nền trang (Canvas Background):** Xám lạnh thanh nhã (`#F2F4F8`) làm nổi bật các khối màu rực rỡ.
+  - **Sắc màu từng khối thẻ chức năng:**
+    - *Sunny Amber:* `#F9BE27` (Chữ đen than `#1E2022`).
+    - *Cosmic Royal Blue:* `#3D6CE7` (Chữ trắng `#FFFFFF`, kết hợp vòng tròn đồng tâm `#527DF0`).
+    - *Electric Violet:* `#8A3FFC` (Chữ trắng `#FFFFFF`, mini-card nghiêng vui tươi).
+    - *Split Coral & Peach:* Hai tông màu đào `#FAD4C8` (trên) và cam san hô `#EE6044` (thân).
+    - *Emerald Mint:* `#20A375` (Chữ trắng, thẻ con trắng tinh khôi).
+    - *Crisp White:* `#FFFFFF` tạo khoảng thở thị giác hài hòa.
+- **3. Họa tiết trang trí & Điểm nhấn (Decorative Motifs & Accents):**
+  - Họa tiết hình tròn bán trong suốt (`rgba(255, 255, 255, 0.12)`), đường quỹ đạo nét đứt quay chậm (`bento-orbital-ring`) và đốm sáng lung linh.
+  - Con dấu răng cưa / starburst badge SVG sau các icon quan trọng và chuỗi streak ngày học.
+  - Sticker hoạt hình vui tươi (mặt trời mỉm cười, đám mây, hành tinh bay, cúp vàng) với animation nhấp nhô nhẹ nhàng (`@keyframes float 0px to -6px`).
+- **4. Hiệu ứng chuyển động & Tương tác xúc giác (Tactile Micro-Interactions):**
+  - Chuyển động đàn hồi vật lý lò xo (`cubic-bezier(0.34, 1.56, 0.64, 1)`) trên thẻ và nút bấm.
+  - Nút bấm tactile 3D với viền chân nổi khối (`border-bottom: 3.5px solid ...`), phản hồi nhấn chân thực (`active: scale(0.95) translateY(2px)`).
+  - Phông chữ hình học thân thiện: `'Plus Jakarta Sans'`, `'Be Vietnam Pro'`, `'Quicksand'`, số liệu Hero Metric kích thước lớn (`44px - 56px`).
+- Bảo toàn 100% logic nghiệp vụ, API Contract và các DOM IDs của toàn bộ hệ thống.
+
 ---
 
 ## 2. Hướng dẫn khởi chạy

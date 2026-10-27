@@ -30,16 +30,24 @@ class AntigravityBackground {
 
   createParticles() {
     this.particles = [];
+    const colors = [
+      'rgba(249, 190, 39, ',  // Sunny Amber
+      'rgba(61, 108, 231, ',  // Cosmic Royal Blue
+      'rgba(138, 63, 252, ',  // Electric Violet
+      'rgba(32, 163, 117, ',  // Emerald Mint
+      'rgba(238, 96, 68, '    // Coral
+    ];
+
     for (let i = 0; i < this.particleCount; i++) {
       this.particles.push({
         x: Math.random() * this.width,
         y: Math.random() * this.height,
-        radius: Math.random() * 2.2 + 0.6,
-        color: Math.random() > 0.5 ? 'rgba(99, 102, 241, ' : 'rgba(6, 182, 212, ',
-        baseAlpha: Math.random() * 0.4 + 0.15,
+        radius: Math.random() * 2.5 + 0.8,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        baseAlpha: Math.random() * 0.35 + 0.15,
         alpha: 0.2,
         speedX: (Math.random() - 0.5) * 0.35,
-        speedY: (Math.random() - 0.5) * 0.35 - 0.1, // Slight upward antigravity drift
+        speedY: (Math.random() - 0.5) * 0.35 - 0.1, // Slight upward drift
         pulseSpeed: Math.random() * 0.02 + 0.005,
         pulseVal: Math.random() * Math.PI
       });
