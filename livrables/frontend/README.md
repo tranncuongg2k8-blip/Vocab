@@ -268,6 +268,31 @@ Giao diện học từ vựng IELTS dạng Flashcard 3D và Quiz trắc nghiệm
   - Hỗ trợ toàn diện cả 7 chế độ học (Lật thẻ 3D, Trắc nghiệm, Ghép thẻ, Gõ từ, Nghe–Viết, Điền từ, Tổng hợp) tự động vận hành trên tập thẻ của nhóm con. Chế độ Trắc nghiệm (Quiz) và Ghép thẻ (Matching) tự sinh câu hỏi/cặp ghép trực tiếp từ thẻ của nhóm.
   - Tiến độ đánh giá thẻ cục bộ (mastered/review/unseen) được tính toán chính xác theo quy mô nhóm thẻ mà không bị thống kê của bộ thẻ mẹ ghi đè.
 
+### Nâng cấp giao diện toàn diện: Playful Gamified Bento Grid Design System
+- **1. Cấu trúc & Bố cục (Bento Grid Architecture):**
+  - Hệ thống lưới CSS Grid đa cột bất đối xứng nhưng cân bằng (hàng trên tỷ lệ `5fr 3.5fr 3.5fr`, hàng dưới tỷ lệ `3fr 6fr 3fr` trên Desktop, tự động co giãn 1-2 cột trên Tablet/Mobile; khoảng cách `gap: 20px - 24px`).
+  - **Khối thẻ chính (Primary Cards):** Bo góc lớn (`border-radius: 28px - 32px`), padding rộng rãi (`24px - 32px`), relative positioning hỗ trợ các sticker ghim góc.
+  - **Khối thẻ con bên trong (Inner Sub-cards):** Nền trắng tinh khôi (`#FFFFFF`), bo góc mềm mại (`16px - 20px`), đổ bóng nổi khối nhẹ (`box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08)`).
+  - Áp dụng góc xoay ngẫu nhiên tinh tế (`rotate(-2deg)` đến `rotate(2deg)`) cho các mini-stat card, tự động xoay thẳng lại (`rotate(0deg)`) và nâng nhẹ khi hover.
+- **2. Bảng màu tươi sáng & Sặc sỡ (Vibrant Color Palette):**
+  - **Nền trang (Canvas Background):** Xám lạnh thanh nhã (`#F2F4F8`) làm nổi bật các khối màu rực rỡ.
+  - **Sắc màu từng khối thẻ chức năng:**
+    - *Sunny Amber:* `#F9BE27` (Chữ đen than `#1E2022`).
+    - *Cosmic Royal Blue:* `#3D6CE7` (Chữ trắng `#FFFFFF`, kết hợp vòng tròn đồng tâm `#527DF0`).
+    - *Electric Violet:* `#8A3FFC` (Chữ trắng `#FFFFFF`, mini-card nghiêng vui tươi).
+    - *Split Coral & Peach:* Hai tông màu đào `#FAD4C8` (trên) và cam san hô `#EE6044` (thân).
+    - *Emerald Mint:* `#20A375` (Chữ trắng, thẻ con trắng tinh khôi).
+    - *Crisp White:* `#FFFFFF` tạo khoảng thở thị giác hài hòa.
+- **3. Họa tiết trang trí & Điểm nhấn (Decorative Motifs & Accents):**
+  - Họa tiết hình tròn bán trong suốt (`rgba(255, 255, 255, 0.12)`), đường quỹ đạo nét đứt quay chậm (`bento-orbital-ring`) và đốm sáng lung linh.
+  - Con dấu răng cưa / starburst badge SVG sau các icon quan trọng và chuỗi streak ngày học.
+  - Sticker hoạt hình vui tươi (mặt trời mỉm cười, đám mây, hành tinh bay, cúp vàng) với animation nhấp nhô nhẹ nhàng (`@keyframes float 0px to -6px`).
+- **4. Hiệu ứng chuyển động & Tương tác xúc giác (Tactile Micro-Interactions):**
+  - Chuyển động đàn hồi vật lý lò xo (`cubic-bezier(0.34, 1.56, 0.64, 1)`) trên thẻ và nút bấm.
+  - Nút bấm tactile 3D với viền chân nổi khối (`border-bottom: 3.5px solid ...`), phản hồi nhấn chân thực (`active: scale(0.95) translateY(2px)`).
+  - Phông chữ hình học thân thiện: `'Plus Jakarta Sans'`, `'Be Vietnam Pro'`, `'Quicksand'`, số liệu Hero Metric kích thước lớn (`44px - 56px`).
+- Bảo toàn 100% logic nghiệp vụ, API Contract và các DOM IDs của toàn bộ hệ thống.
+
 ---
 
 ## 2. Hướng dẫn khởi chạy
