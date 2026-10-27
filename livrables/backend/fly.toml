@@ -1,4 +1,4 @@
-app = "vocab-diamond"
+app = "vocabs-diamond"
 primary_region = "sin"
 
 [build]
